@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "12.18.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js"
@@ -11,16 +14,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bufferutil": "^4.0.1",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.2.7",
     "install": "^0.13.0",
+    "node-opus": "^0.3.3",
     "node-pre-gyp": "^0.17.0",
-    "ytdl": "^1.4.1",
-    "ytdl-core": "^4.4.1",
+    "opusscript": "^0.0.7",
     "utf-8-validate": "^5.0.2",
-    "bufferutil":"^4.0.1",
-    "node-opus":"^0.3.3",
-    "opusscript":"^0.0.7"
+    "ytdl": "^1.4.1",
+    "ytdl-core": "^4.4.1"
   }
 }
