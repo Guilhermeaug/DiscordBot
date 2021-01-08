@@ -16,7 +16,11 @@ function random(message) {
 }
 
 function leroy(message) {
+<<<<<<< HEAD
 	message.channel.send("Leeeeerooooyyyyy JEEEENNNNKINS"); // sends a message to the channel with the number
+=======
+    message.channel.send("Leeeeerooooyyyyy JEEENNNNKINS"); // sends a message to the channel with the number
+>>>>>>> e6689d888f9369f18d3bd42850cefb197f1ca800
 }
 
 function lett(message) {
