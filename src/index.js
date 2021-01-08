@@ -1,10 +1,8 @@
 const Discord = require("discord.js");
 const fs = require("fs"); // imports the file io library
-const dotenv = require("dotenv");
+require("dotenv").config();
 
-const client = new Discord.Client(); 
-//const token = fs.readFileSync("token.txt").toString(); // gets your token from the file
-const envConfig = dotenv.config();
+const client = new Discord.Client();
 
 client.once("ready", () => { // prints "Ready!" to the console once the bot is online
 	console.log("Running in Discord!");
@@ -16,7 +14,7 @@ function random(message) {
 }
 
 function leroy(message) {
-    message.channel.send("Leeeeerooooyyyyy JEEENNNNKINS"); // sends a message to the channel with the number
+	message.channel.send("Leeeeerooooyyyyy JEEENNNNKINS"); // sends a message to the channel with the number
 }
 
 function lett(message) {
@@ -37,31 +35,31 @@ function eliza(message) {
 
 function kick(message) {
 	const user = message.mentions.users.first();
-	if(user){
+	if (user) {
 		const user = message.mentions.users.first();
 		if (user) {
 			const member = message.guild.member(user);
 			if (member) {
-			member
-				.kick('Optional reason that will display in the audit logs')
-				.then(() => {
-				message.reply(`Botei o ${user.tag} para mamar com sucesso!`);
-				})
-				.catch(err => {
-				message.reply('I was unable to kick the member');
-				console.error(err);
-				});
+				member
+					.kick('Optional reason that will display in the audit logs')
+					.then(() => {
+						message.reply(`Botei o ${user.tag} para mamar com sucesso!`);
+					})
+					.catch(err => {
+						message.reply('I was unable to kick the member');
+						console.error(err);
+					});
 			} else {
-			message.reply("That user isn't in this guild!");
+				message.reply("That user isn't in this guild!");
 			}
 		} else message.reply("You didn't mention the user to kick!");
 	}
 }
 
-function randomMessage(message, randomNumber){
-	messages.forEach((item, index)=>{
-		if(index == randomNumber){
-			console.log("index: " + index + " / item: "+ item);
+function randomMessage(message, randomNumber) {
+	messages.forEach((item, index) => {
+		if (index == randomNumber) {
+			console.log("index: " + index + " / item: " + item);
 			message.channel.send(item);
 		}
 	});
@@ -99,17 +97,18 @@ client.on("message", message => {
 		if (commands.has(command)) { // checks if the map contains the command
 			commands.get(command)(message) // runs the command
 		}
-		
+
 		if (message.content.startsWith('?chuteLeroi')) {
 			kick(message);
 		}
-		if(message.content.startsWith('?eu')){
+		if (message.content.startsWith('?eu')) {
 			let number = Math.round(Math.random() * (messages.length));
 			console.log("Número aletório gerado para mostrar mensagem: " +
-			number);
+				number);
 			randomMessage(message, number);
 		}
 	}
 });
 
-client.login('Nzk2ODQ1NjU4Nzc3OTc2OTAz.X_d2WQ.1SX27DFjx7fwHF9uFVTcIkqorLs'); // starts the bot up
+
+client.login(process.env.DISCORD_TOKEN); // starts the bot up
