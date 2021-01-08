@@ -27,6 +27,7 @@ function thaix(message) {
 
 function pablo(message) {
 	message.channel.send("AIIII QUE DEEELIIICIA CAARRA");
+	message.channel.send("Saudades de você meu querido!")
 }
 
 function eliza(message) {
@@ -35,6 +36,7 @@ function eliza(message) {
 
 function kick(message) {
 	const user = message.mentions.users.first();
+	console.log(message);
 	if (user) {
 		const user = message.mentions.users.first();
 		if (user) {
@@ -109,6 +111,5 @@ client.on("message", message => {
 		}
 	}
 });
-
 
 client.login(process.env.DISCORD_TOKEN); // starts the bot up
