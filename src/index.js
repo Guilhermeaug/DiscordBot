@@ -36,7 +36,7 @@ function eliza(message) {
 
 function kick(message) {
 	const user = message.mentions.users.first();
-	console.log(message);
+	//console.log(message);
 	if (user) {
 		const user = message.mentions.users.first();
 		if (user) {
