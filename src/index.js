@@ -1,5 +1,7 @@
 const Discord = require("discord.js");
 const fs = require("fs"); // imports the file io library
+const ytdl = require("ytdl-core");
+
 require("dotenv").config();
 
 const client = new Discord.Client();
@@ -27,7 +29,6 @@ function thaix(message) {
 
 function pablo(message) {
 	message.channel.send("AIIII QUE DEEELIIICIA CAARRA");
-	message.channel.send("Saudades de você meu querido!")
 }
 
 function eliza(message) {
@@ -36,7 +37,6 @@ function eliza(message) {
 
 function kick(message) {
 	const user = message.mentions.users.first();
-	//console.log(message);
 	if (user) {
 		const user = message.mentions.users.first();
 		if (user) {
@@ -93,6 +93,8 @@ messages.push("Encapetado");
 messages.push("Estressado");
 messages.push("Corno");
 
+let queue = new Array();
+
 client.on("message", message => {
 	if (message.content[0] === '?') {
 		const command = message.content.split(" ")[0].substr(1); // gets the command name
@@ -109,7 +111,59 @@ client.on("message", message => {
 				number);
 			randomMessage(message, number);
 		}
+		if(message.content.startsWith('?play')){
+			execute(message);
+		}
+		if(message.content.startsWith('?queue')){
+			showQueue(message);
+		}
+		if(message.content.startsWith('?teste')){
+			message.channel.send("TESTADO");
+		}
+
 	}
 });
+
+async function execute(message){
+	const voiceChannel = message.member.voice.channel;
+	if(!voiceChannel){
+		console.error('No voice channel found');
+		return message.reply('Você não está em um canal de voz, letícia. hehe');
+	}
+
+	const connection = await voiceChannel.join();
+	const link = message.content.split(" ");
+	const musica = link[1];
+	
+
+	if(queue.length != 0){
+		queue.push(musica);
+		return message.reply("Sua música entrou na fila, posicao: " + queue.indexOf(musica));
+	} else {
+		queue.push(musica);
+		message.reply("Sua música será executada agora");
+		queue.forEach((item, index) =>{
+			console.warn("música : " + item + " Posicao na fila : " +  index);
+			const watcher = connection.play(
+				ytdl(item, {
+				filter:'audioonly',
+				quality:'lowest',
+			}));
+			watcher.on('end', () => {
+				queue.pop(musica);
+			});
+		})
+	}
+
+}
+
+function showQueue(message) {
+	if(!queue || queue.length === 0 || queue == null){
+		message.channel.send("A fila está vazia!");
+	}
+	queue.forEach((item, index) => {
+		message.channel.send((parseInt(index) + 1) + " -  música : " + item);
+	});
+}
 
 client.login(process.env.DISCORD_TOKEN); // starts the bot up
