@@ -124,7 +124,9 @@ client.on("message", (message) => {
     }
 
     if (message.content.startsWith("?hltv")) {
-      //falta terminar
+	  //falta terminar
+	  hltvLeaderBoard.Ranking(message);
+	  
     }
   }
 });
