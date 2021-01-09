@@ -5,6 +5,7 @@ const StringBuilder = require("string-builder");
 const sb = new StringBuilder();
 
 module.exports.Ranking = function (message) {
+  let sb = new StringBuilder();
   axios(url)
     .then((response, err) => {
       const html = response.data;
@@ -35,7 +36,8 @@ module.exports.Ranking = function (message) {
       }
 
       message.channel.send(sb.toString());
-      sb.append(null);
+
+      sb = null;
     })
     .catch(console.error);
 }
