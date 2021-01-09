@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/0d2290de-95b9-40cb-98b1-7e446bca2d16/resourceGroups/discord-bot/providers/Microsoft.Web/sites/discord-bot-cefetmg",
+    "appService.deploySubpath": "."
+}

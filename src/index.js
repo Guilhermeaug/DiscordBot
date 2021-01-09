@@ -30,7 +30,7 @@ function lett(message) {
 }
 
 function thaix(message) {
-	message.channel.send("<3  " + emoji.get('heart'));
+	message.channel.send("<3  " + emoji.get('heart') + "  " + emoji.get('couplekiss'));
 }
 
 function pablo(message) {
