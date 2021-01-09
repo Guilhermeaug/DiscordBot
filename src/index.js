@@ -1,10 +1,16 @@
 const Discord = require("discord.js");
 const fs = require("fs"); // imports the file io library
 const ytdl = require("ytdl-core");
-
+const emoji = require('node-emoji')
+const StringBuilder = require("string-builder");
 require("dotenv").config();
 
 const client = new Discord.Client();
+
+//hltv_web_scrap
+const axios = require('axios');
+const cheerio = require('cheerio');
+const url = 'https://www.hltv.org/ranking/teams/';
 
 client.once("ready", () => { // prints "Ready!" to the console once the bot is online
 	console.log("Running in Discord!");
@@ -20,11 +26,11 @@ function leroy(message) {
 }
 
 function lett(message) {
-	message.channel.send("<3");
+	message.channel.send("<3  " + emoji.get('couplekiss') );
 }
 
 function thaix(message) {
-	message.channel.send("<3");
+	message.channel.send("<3  " + emoji.get('heart'));
 }
 
 function pablo(message) {
@@ -32,7 +38,7 @@ function pablo(message) {
 }
 
 function eliza(message) {
-	message.channel.send("<3");
+	message.channel.send("<3  " + emoji.get('heart'));
 }
 
 function kick(message) {
@@ -111,22 +117,54 @@ client.on("message", message => {
 				number);
 			randomMessage(message, number);
 		}
-		if(message.content.startsWith('?play')){
+		if (message.content.startsWith('?play')) {
 			execute(message);
 		}
-		if(message.content.startsWith('?queue')){
+		if (message.content.startsWith('?queue')) {
 			showQueue(message);
 		}
-		if(message.content.startsWith('?teste')){
+		if (message.content.startsWith('?teste')) {
 			message.channel.send("TESTADO");
+		}
+
+		if (message.content.startsWith('?hltv')) {
+			const sb = new StringBuilder();
+			axios(url).then(response => {
+				const html = response.data;
+				const $ = cheerio.load(html);
+				const tabelaStatus = $('.ranking-header');
+				const tabelaTimes = [];
+
+				tabelaStatus.each(function () {
+					const nomeTime = $(this).find('.team-logo > img').attr('title');
+					const posicaoTime = $(this).find('.position').text();
+
+					tabelaTimes.push({
+						nomeTime,
+						posicaoTime
+					});
+				});
+
+				sb.append("RANKING HLTV 100% ATUALIZADO");
+				sb.appendLine();
+
+				for (let i = 0; i < 10; i++) {
+					sb.appendFormat("{0} --- {1} {2}", tabelaTimes[i].posicaoTime, tabelaTimes[i].nomeTime, emoji.get('tongue'));
+					sb.appendLine();
+				}
+
+				message.channel.send(sb.toString());
+
+			}).catch(console.error);
+			
 		}
 
 	}
 });
 
-async function execute(message){
+async function execute(message) {
 	const voiceChannel = message.member.voice.channel;
-	if(!voiceChannel){
+	if (!voiceChannel) {
 		console.error('No voice channel found');
 		return message.reply('Você não está em um canal de voz, letícia. hehe');
 	}
@@ -134,21 +172,21 @@ async function execute(message){
 	const connection = await voiceChannel.join();
 	const link = message.content.split(" ");
 	const musica = link[1];
-	
 
-	if(queue.length != 0){
+
+	if (queue.length != 0) {
 		queue.push(musica);
 		return message.reply("Sua música entrou na fila, posicao: " + queue.indexOf(musica));
 	} else {
 		queue.push(musica);
 		message.reply("Sua música será executada agora");
-		queue.forEach((item, index) =>{
-			console.warn("música : " + item + " Posicao na fila : " +  index);
+		queue.forEach((item, index) => {
+			console.warn("música : " + item + " Posicao na fila : " + index);
 			const watcher = connection.play(
 				ytdl(item, {
-				filter:'audioonly',
-				quality:'lowest',
-			}));
+					filter: 'audioonly',
+					quality: 'lowest',
+				}));
 			watcher.on('end', () => {
 				queue.pop(musica);
 			});
@@ -158,7 +196,7 @@ async function execute(message){
 }
 
 function showQueue(message) {
-	if(!queue || queue.length === 0 || queue == null){
+	if (!queue || queue.length === 0 || queue == null) {
 		message.channel.send("A fila está vazia!");
 	}
 	queue.forEach((item, index) => {
