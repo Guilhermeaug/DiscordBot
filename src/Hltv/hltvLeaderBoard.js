@@ -35,6 +35,7 @@ module.exports.Ranking = function (message) {
       }
 
       message.channel.send(sb.toString());
+      sb.append(null);
     })
     .catch(console.error);
 }
