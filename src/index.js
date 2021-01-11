@@ -54,16 +54,12 @@ async function searchMusic(message, serverQueue) {
   }
 
 
-  //const filaEncontrada = new Map();
   const listaVideos = await scrape().then((value) => {
-    //console.log(value)
-    //const listaVideos = value;
 
     let sb = new StringBuilder();
     value.videos.forEach(function (item, index) {
       sb.appendFormat("{0}: {1}", index, item.title);
       sb.appendLine();
-      //filaEncontrada.set(index, item);
     });
 
     message.channel.send(sb.toString());
