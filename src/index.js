@@ -18,7 +18,7 @@ client.once("ready", () => {
 
 async function searchMusic(message, serverQueue) {
   const args = message.content.split(" ");
-  const removed = args.splice(0, 1);
+  let removed = args.splice(0, 1);
   const keyWords = args.join('+');
 
   //https://www.youtube.com/results?search_query=aurora+love
@@ -26,7 +26,7 @@ async function searchMusic(message, serverQueue) {
   url = url.concat(keyWords);
 
   let scrape = async () => {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
     await page.goto(url);
     const result = await page.evaluate(() => {
@@ -47,31 +47,134 @@ async function searchMusic(message, serverQueue) {
           musica.url = video.getAttribute('href');
           listaVideos.videos.push(musica);
         })
-      return listaVideos;
-    })
-    browser.close()
-    return result;
-  }
 
+      if (listaVideos.videos.length > 5) {
+        while (listaVideos.videos.length > 5) {
+          listaVideos.videos.pop();
+        }
+      }
+
+      return listaVideos;
+
+    })
+
+    browser.close()
+
+    return result;
+    
+  }
 
   const listaVideos = await scrape().then((value) => {
 
-    let sb = new StringBuilder();
-    value.videos.forEach(function (item, index) {
-      sb.appendFormat("{0}: {1}", index, item.title);
-      sb.appendLine();
-    });
+    //let sb = new StringBuilder();
+    // value.videos.forEach(function (item, index) {
+    //   sb.appendFormat("{0}: {1}", index, item.title);
+    //   sb.appendLine();
+    // });
 
-    message.channel.send(sb.toString());
-    sb.append(null)
+    //message.channel.send(sb.toString());
+    //sb.append(null)
 
     return value;
 
   });
 
+  const embed = {
+    "title": "Escola a música dentre as opções abaixo:",
+    "color": 5444442,
+    "image": {
+      "url": "https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png"
+    },
+    "footer": {
+      "icon_url": "https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png",
+      "text": "Tenha cuidado!"
+    },
+    "author": {
+      "name": "Sr.Cabeça",
+      "url": "https://discordapp.com",
+      "icon_url": "https://cdn.discordapp.com/embed/avatars/0.png"
+    },
+    "fields": [
+      {
+        "name": `0: ${listaVideos.videos[0].title}`,
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b",
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b​",
+        "value": "​\u200b"
+      },
+      {
+        "name": `1: ${listaVideos.videos[1].title}`,
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": true
+      },
+      {
+        "name": "​\u200b",
+        "value": "\u200b​"
+      },
+      {
+        "name": `2: ${listaVideos.videos[2].title}`,
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b​",
+        "inline": true
+      },
+      {
+        "name": "​\u200b",
+        "value": "​\u200b"
+      },
+      {
+        "name": `3: ${listaVideos.videos[3].title}`,
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b",
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "​\u200b",
+        "value": "​\u200b"
+      },
+      {
+        "name": `4: ${listaVideos.videos[4].title}`,
+        "value": "\u200b​",
+        "inline": true
+      },
+      {
+        "name": "\u200b",
+        "value": "​\u200b",
+        "inline": true
+      },
+      {
+        "name": "\u200b​",
+        "value": "\u200b​"
+      }
+    ]
+  };
+
+  message.channel.send({embed: embed});
+
   return listaVideos;
 
 }
+
+
 
 function random(message) {
   const number = Math.random(); // generates a random number
