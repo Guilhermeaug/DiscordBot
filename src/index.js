@@ -65,18 +65,7 @@ async function searchMusic(message, serverQueue) {
   }
 
   const listaVideos = await scrape().then((value) => {
-
-    //let sb = new StringBuilder();
-    // value.videos.forEach(function (item, index) {
-    //   sb.appendFormat("{0}: {1}", index, item.title);
-    //   sb.appendLine();
-    // });
-
-    //message.channel.send(sb.toString());
-    //sb.append(null)
-
     return value;
-
   });
 
   const embed = {
@@ -101,27 +90,9 @@ async function searchMusic(message, serverQueue) {
         "inline": true
       },
       {
-        "name": "\u200b",
-        "value": "​\u200b",
-        "inline": true
-      },
-      {
-        "name": "\u200b​",
-        "value": "​\u200b"
-      },
-      {
         "name": `1: ${listaVideos.videos[1].title}`,
         "value": "​\u200b",
         "inline": true
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": true
-      },
-      {
-        "name": "​\u200b",
-        "value": "\u200b​"
       },
       {
         "name": `2: ${listaVideos.videos[2].title}`,
@@ -129,41 +100,14 @@ async function searchMusic(message, serverQueue) {
         "inline": true
       },
       {
-        "name": "\u200b",
-        "value": "\u200b​",
-        "inline": true
-      },
-      {
-        "name": "​\u200b",
-        "value": "​\u200b"
-      },
-      {
         "name": `3: ${listaVideos.videos[3].title}`,
         "value": "​\u200b",
         "inline": true
       },
       {
-        "name": "\u200b",
-        "value": "​\u200b",
-        "inline": true
-      },
-      {
-        "name": "​\u200b",
-        "value": "​\u200b"
-      },
-      {
         "name": `4: ${listaVideos.videos[4].title}`,
         "value": "\u200b​",
         "inline": true
-      },
-      {
-        "name": "\u200b",
-        "value": "​\u200b",
-        "inline": true
-      },
-      {
-        "name": "\u200b​",
-        "value": "\u200b​"
       }
     ]
   };
