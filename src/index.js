@@ -2,15 +2,80 @@ const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 const emoji = require("node-emoji");
 require("dotenv").config();
+
 const hltvLeaderBoard = require("./Hltv/hltvLeaderBoard.js");
 
 const client = new Discord.Client();
 
 const StringBuilder = require("string-builder");
 
+const puppeteer = require("puppeteer");
+
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
 });
+
+
+async function searchMusic(message, serverQueue) {
+  const args = message.content.split(" ");
+  const removed = args.splice(0, 1);
+  const keyWords = args.join('+');
+
+  //https://www.youtube.com/results?search_query=aurora+love
+  let url = 'https://www.youtube.com/results?search_query='
+  url = url.concat(keyWords);
+
+  let scrape = async () => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url);
+    const result = await page.evaluate(() => {
+
+      const listaVideos = {
+        videos: []
+      }
+
+      document.querySelectorAll('h3 > a')
+        .forEach(function (video) {
+
+          let musica = {
+            title: '',
+            url: ''
+          }
+
+          musica.title = video.getAttribute('title');
+          musica.url = video.getAttribute('href');
+          listaVideos.videos.push(musica);
+        })
+      return listaVideos;
+    })
+    browser.close()
+    return result;
+  }
+
+
+  //const filaEncontrada = new Map();
+  const listaVideos = await scrape().then((value) => {
+    //console.log(value)
+    //const listaVideos = value;
+
+    let sb = new StringBuilder();
+    value.videos.forEach(function (item, index) {
+      sb.appendFormat("{0}: {1}", index, item.title);
+      sb.appendLine();
+      //filaEncontrada.set(index, item);
+    });
+
+    message.channel.send(sb.toString());
+    sb.append(null)
+
+    return value;
+
+  });
+
+  return listaVideos;
+
+}
 
 function random(message) {
   const number = Math.random(); // generates a random number
@@ -39,10 +104,6 @@ function eliza(message) {
   message.channel.send("<3  " + emoji.get("heart"));
 }
 
-function lucas(message) {
-  let id = '359784715634606080';
-  message.channel.send(`<@${id}>` + 'Você vai mamar! ');
-}
 
 function kick(message) {
   const user = message.mentions.users.first();
@@ -82,7 +143,6 @@ commands.set("lett", lett);
 commands.set("thaix", thaix);
 commands.set("pablo", pablo);
 commands.set("eliza", eliza);
-commands.set("lucas", lucas);
 
 let messages = new Array();
 messages.push("Tu é muito estranho");
@@ -103,11 +163,12 @@ messages.push("Corno");
 
 // let queue = new Array();
 const queue = new Map();
-
+var listaVideos;
+var mensagem = new Discord.Message();
 
 client.on("message", (message) => {
   if (message.author.bot) return;
-  if (!message.content.startsWith('?')) return;
+  //if (!message.content.startsWith('?')) return;
 
   const serverQueue = queue.get(message.guild.id);
 
@@ -116,8 +177,6 @@ client.on("message", (message) => {
     // checks if the map contains the command
     commands.get(command)(message); // runs the command
   }
-
-  commands.get('lucas')(message);
 
   if (message.content.startsWith("?chuteLeroi")) {
     kick(message);
@@ -129,11 +188,36 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?play")) {
-    execute(message, serverQueue);
+    execute(message, serverQueue, null);
   }
 
   if (message.content.startsWith("?queue")) {
     showQueue(message, serverQueue);
+  }
+
+  if (message.content.startsWith("?clean")) {
+    cleanQueue(message, serverQueue);
+  }
+
+  if (message.content.startsWith("?skip")) {
+    skipQueue(message, serverQueue);
+  }
+
+  if (message.content.startsWith("?volume")) {
+    changeVolume(message, serverQueue);
+  }
+
+
+  if (message.content.startsWith("?search")) {
+    mensagem = message;
+    arromba(message, serverQueue);
+  }
+
+
+  if (!message.content.startsWith("?") && mensagem.content != '') {
+    if (message.author === mensagem.author) {
+      execute(message, serverQueue, listaVideos);
+    }
   }
 
   if (message.content.startsWith("?teste")) {
@@ -146,19 +230,34 @@ client.on("message", (message) => {
 
 });
 
-async function execute(message, serverQueue) {
+async function arromba(message, serverQueue) {
+  listaVideos = await teste(message, serverQueue);
+}
+
+async function execute(message, serverQueue, listaVideos) {
+  mensagem.content = '';
   const voiceChannel = message.member.voice.channel;
   if (!voiceChannel) {
     console.error("No voice channel found");
     return message.reply("Você não está em um canal de voz, letícia. hehe");
   }
 
-  const args = message.content.split(" ");
-  const songInfo = await ytdl.getInfo(args[1]); // a api pega todas as informacoes
   const song = { // separa apenas o necessario
-    title: songInfo.videoDetails.title,
-    url: songInfo.videoDetails.video_url
+    title: '',
+    url: ''
   };
+
+  if (listaVideos) {
+    const url = 'youtube.com'.concat(listaVideos.videos[message.content].url);
+    const songInfo = await ytdl.getInfo(url);
+    song.title = songInfo.videoDetails.title;
+    song.url = songInfo.videoDetails.video_url;
+  } else {
+    const args = message.content.split(" ");
+    const songInfo = await ytdl.getInfo(args[1]); // a api pega todas as informacoes
+    song.title = songInfo.videoDetails.title;
+    song.url = songInfo.videoDetails.video_url;
+  }
 
   if (!serverQueue) {
     const queueBuilder = {
@@ -166,7 +265,7 @@ async function execute(message, serverQueue) {
       voiceChannel: voiceChannel,
       connection: null,
       songs: [],
-      volume: 5,
+      volume: 4,
       playing: true
     };
 
@@ -193,18 +292,18 @@ function play(guild, song) {
   const serverQueue = queue.get(guild);
   if (!song) {
     serverQueue.voiceChannel.leave();
-    queue.delete(guild.id);
+    queue.delete(guild);
     return;
   }
 
-  const watcher = serverQueue.connection
+  const dispatcher = serverQueue.connection
     .play(ytdl(song.url))
     .on("finish", () => {
       serverQueue.songs.shift();
       play(guild, serverQueue.songs[0]);
     })
     .on("error", error => console.error(error));
-  watcher.setVolumeLogarithmic(serverQueue.volume / 5);
+  dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
   serverQueue.textChannel.send(`Start playing: **${song.title}**`);
 }
 
@@ -220,6 +319,40 @@ function showQueue(message, serverQueue) {
     message.channel.send(sb.toString());
     sb.append(null);
   }
+}
+
+function cleanQueue(message, serverQueue) {
+  if (serverQueue) {
+    serverQueue.songs = [];
+  }
+}
+
+function skipQueue(message, serverQueue) {
+  if (!serverQueue)
+    return message.channel.send("Larga a mão de ser mula!");
+
+  serverQueue.connection.dispatcher.end();
+}
+
+function changeVolume(message, serverQueue) {
+  const args = message.content.split(" ");
+  const volume = args[1];
+  serverQueue.volume = volume;
+}
+
+
+async function teste(message, serverQueue) {
+  let recupera = async () => {
+    return searchMusic(message, serverQueue);
+  }
+
+  const listaVideos = await recupera().then((value) => {
+    //console.log(value);
+    //execute(message, serverQueue, value);
+    return value;
+  }).catch(console.error)
+
+  return listaVideos;
 }
 
 client.login(process.env.DISCORD_TOKEN); // starts the bot up
