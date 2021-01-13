@@ -23,13 +23,13 @@ async function searchByKeyword(message, serverQueue) {
   let removed = args.splice(0, 1);
   //const keyWords = args.join('+')
   const query = args.join(' ');
-  
+
   let request = async () => {
     var results = youtube.search.list({
       q: query,
       part: 'snippet',
       type: 'video',
-      maxResults: 5
+      maxResults: 10
     }).catch(console.error);
 
     return results;
@@ -54,46 +54,25 @@ async function searchByKeyword(message, serverQueue) {
 
   });
 
-  const embed = {
-    "title": "Escola a música dentre as opções abaixo:",
-    "color": 5444442,
-    "image": {
-      "url": "https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png"
-    },
-    "footer": {
-      "icon_url": "https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png",
-      "text": "Tenha cuidado!"
-    },
-    "author": {
-      "name": "Sr.Cabeça",
-      "url": "https://discordapp.com",
-      "icon_url": "https://cdn.discordapp.com/embed/avatars/0.png"
-    },
-    "fields": [
-      {
-        "name": `0: ${listaVideos.videos[0].title}`,
-        "value": "​\u200b"
-      },
-      {
-        "name": `1: ${listaVideos.videos[1].title}`,
-        "value": "​\u200b"
-      },
-      {
-        "name": `2: ${listaVideos.videos[2].title}`,
-        "value": "​\u200b"
-      },
-      {
-        "name": `3: ${listaVideos.videos[3].title}`,
-        "value": "​\u200b",
-      },
-      {
-        "name": `4: ${listaVideos.videos[4].title}`,
-        "value": "\u200b​",
-      }
-    ]
-  };
+  const embed = new Discord.MessageEmbed()
+    .setColor(5444442)
+    .setTitle('Escola a música dentre as opções abaixo:')
+    .setImage('https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png')
+    .setFooter('Tenha cuidado!', 'https://64.media.tumblr.com/b91d7d1bf5b90c1856393b9a0bca6f03/54f93eb2c4a807f3-10/s250x400/de82b02d86ce6e08b2d0ecd578c055bbb8f64d2c.png')
+    .addFields(
+      { name: `${emoji.get('zero')}: ${listaVideos.videos[0].title}`, value: '\u200b' },
+      { name: `${emoji.get('one')}: ${listaVideos.videos[1].title}`, value: '\u200b' },
+      { name: `${emoji.get('two')}: ${listaVideos.videos[2].title}`, value: '\u200b' },
+      { name: `${emoji.get('three')}: ${listaVideos.videos[3].title}`, value: '\u200b' },
+      { name: `${emoji.get('four')}: ${listaVideos.videos[4].title}`, value: '\u200b' },
+      { name: `${emoji.get('five')}: ${listaVideos.videos[5].title}`, value: '\u200b' },
+      { name: `${emoji.get('six')}: ${listaVideos.videos[6].title}`, value: '\u200b' },
+      { name: `${emoji.get('seven')}: ${listaVideos.videos[7].title}`, value: '\u200b' },
+      { name: `${emoji.get('eight')}: ${listaVideos.videos[8].title}`, value: '\u200b' },
+      { name: `${emoji.get('nine')}: ${listaVideos.videos[9].title}`, value: '\u200b' })
+    .setTimestamp();
 
-  message.channel.send({ embed: embed });
+  message.channel.send(embed);
 
   return listaVideos;
 
@@ -235,6 +214,10 @@ client.on("message", (message) => {
     arromba(message, serverQueue);
   }
 
+  if (message.content.startsWith("?clear")) {
+    clearQueue(message, serverQueue);
+  }
+
   if (!message.content.startsWith("?") && mensagem.content != '') {
     if (message.author === mensagem.author) {
       execute(message, serverQueue, listaVideos);
@@ -286,7 +269,7 @@ async function execute(message, serverQueue, listaVideos) {
       voiceChannel: voiceChannel,
       connection: null,
       songs: [],
-      volume: 4,
+      volume: 2,
       playing: true
     };
 
@@ -355,26 +338,20 @@ function skipQueue(message, serverQueue) {
   serverQueue.connection.dispatcher.end();
 }
 
+function clearQueue(message, serverQueue) {
+  if (!serverQueue)
+    return message.channel.send('Larga a mão de ser mula!');
+
+  serverQueue.voiceChannel.leave();
+  queue.delete(message.guild.id);
+
+}
+
 function changeVolume(message, serverQueue) {
   const args = message.content.split(" ");
   const volume = args[1];
   serverQueue.volume = volume;
 }
-
-
-// async function teste(message, serverQueue) {
-//   let recupera = async () => {
-//     return searchMusic(message, serverQueue);
-//   }
-
-//   const listaVideos = await recupera().then((value) => {
-//     //console.log(value);
-//     //execute(message, serverQueue, value);
-//     return value;
-//   }).catch(console.error)
-
-//   return listaVideos;
-// }
 
 async function teste(message, serverQueue) {
   let recupera = async () => {
@@ -382,8 +359,6 @@ async function teste(message, serverQueue) {
   }
 
   const listaVideos = await recupera().then((value) => {
-    //console.log(value);
-    //execute(message, serverQueue, value);
     return value;
   }).catch(console.error)
 
