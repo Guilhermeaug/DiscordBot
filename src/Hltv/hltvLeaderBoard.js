@@ -1,10 +1,11 @@
+const Discord = require("discord.js");
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 const url = "https://www.hltv.org/ranking/teams/";
 const emoji = require("node-emoji");
 
 module.exports.Ranking = function (message) {
-  let sb = new StringBuilder();
   axios(url)
     .then((response, err) => {
       const html = response.data;
