@@ -2,6 +2,7 @@ const { google } = require('googleapis');
 const ytdl = require("ytdl-core");
 const emoji = require("node-emoji");
 const Discord = require("discord.js");
+const StringBuilder = require("string-builder");
 
 const youtube = google.youtube({
     version: 'v3',
