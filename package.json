@@ -20,6 +20,8 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.2.7",
+    "google-auth-library": "^6.1.4",
+    "googleapis": "^67.0.0",
     "install": "^0.13.0",
     "node-emoji": "^1.10.0",
     "node-opus": "^0.3.3",
@@ -29,6 +31,6 @@
     "string-builder": "^0.1.8",
     "utf-8-validate": "^5.0.4",
     "ytdl": "^1.4.1",
-    "ytdl-core": "^4.4.2"
+    "ytdl-core": "^4.4.3"
   }
 }

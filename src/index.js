@@ -2,6 +2,11 @@ const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 const emoji = require("node-emoji");
 require("dotenv").config();
+const { google } = require('googleapis');
+const youtube = google.youtube({
+  version: 'v3',
+  auth: process.env.GOOGLE_TOKEN
+})
 
 const hltvLeaderBoard = require("./Hltv/hltvLeaderBoard.js");
 
@@ -9,63 +14,44 @@ const client = new Discord.Client();
 
 const StringBuilder = require("string-builder");
 
-const puppeteer = require("puppeteer");
-
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
 });
 
-
-async function searchMusic(message, serverQueue) {
+async function searchByKeyword(message, serverQueue) {
   const args = message.content.split(" ");
   let removed = args.splice(0, 1);
-  const keyWords = args.join('+');
+  //const keyWords = args.join('+')
+  const query = args.join(' ');
+  
+  let request = async () => {
+    var results = youtube.search.list({
+      q: query,
+      part: 'snippet',
+      type: 'video',
+      maxResults: 5
+    }).catch(console.error);
 
-  //https://www.youtube.com/results?search_query=aurora+love
-  let url = 'https://www.youtube.com/results?search_query='
-  url = url.concat(keyWords);
-
-  let scrape = async () => {
-    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    const page = await browser.newPage();
-    await page.goto(url);
-    const result = await page.evaluate(() => {
-
-      const listaVideos = {
-        videos: []
-      }
-
-      document.querySelectorAll('h3 > a')
-        .forEach(function (video) {
-
-          let musica = {
-            title: '',
-            url: ''
-          }
-
-          musica.title = video.getAttribute('title');
-          musica.url = video.getAttribute('href');
-          listaVideos.videos.push(musica);
-        })
-
-      if (listaVideos.videos.length > 5) {
-        while (listaVideos.videos.length > 5) {
-          listaVideos.videos.pop();
-        }
-      }
-
-      return listaVideos;
-
-    })
-
-    browser.close()
-
-    return result;
-    
+    return results;
   }
 
-  const listaVideos = await scrape().then((value) => {
-    return value;
+  const listaVideos = await request().then(results => {
+    const listaVideos = { videos: [] }
+    const listItems = results.data.items;
+    listItems.forEach(item => {
+      var musica = { url: '', title: '' }
+
+      const videoId = item.id.videoId;
+      const videoTitle = item.snippet.title;
+
+      musica.url = `https://www.youtube.com/watch?v=${videoId}`;
+      musica.title = videoTitle;
+
+      listaVideos.videos.push(musica);
+    });
+
+    return listaVideos;
+
   });
 
   const embed = {
@@ -86,39 +72,32 @@ async function searchMusic(message, serverQueue) {
     "fields": [
       {
         "name": `0: ${listaVideos.videos[0].title}`,
-        "value": "​\u200b",
-        "inline": true
+        "value": "​\u200b"
       },
       {
         "name": `1: ${listaVideos.videos[1].title}`,
-        "value": "​\u200b",
-        "inline": true
+        "value": "​\u200b"
       },
       {
         "name": `2: ${listaVideos.videos[2].title}`,
-        "value": "​\u200b",
-        "inline": true
+        "value": "​\u200b"
       },
       {
         "name": `3: ${listaVideos.videos[3].title}`,
         "value": "​\u200b",
-        "inline": true
       },
       {
         "name": `4: ${listaVideos.videos[4].title}`,
         "value": "\u200b​",
-        "inline": true
       }
     ]
   };
 
-  message.channel.send({embed: embed});
+  message.channel.send({ embed: embed });
 
   return listaVideos;
 
 }
-
-
 
 function random(message) {
   const number = Math.random(); // generates a random number
@@ -209,6 +188,7 @@ const queue = new Map();
 var listaVideos;
 var mensagem = new Discord.Message();
 
+
 client.on("message", (message) => {
   if (message.author.bot) return;
   //if (!message.content.startsWith('?')) return;
@@ -250,12 +230,10 @@ client.on("message", (message) => {
     changeVolume(message, serverQueue);
   }
 
-
   if (message.content.startsWith("?search")) {
     mensagem = message;
     arromba(message, serverQueue);
   }
-
 
   if (!message.content.startsWith("?") && mensagem.content != '') {
     if (message.author === mensagem.author) {
@@ -384,9 +362,23 @@ function changeVolume(message, serverQueue) {
 }
 
 
+// async function teste(message, serverQueue) {
+//   let recupera = async () => {
+//     return searchMusic(message, serverQueue);
+//   }
+
+//   const listaVideos = await recupera().then((value) => {
+//     //console.log(value);
+//     //execute(message, serverQueue, value);
+//     return value;
+//   }).catch(console.error)
+
+//   return listaVideos;
+// }
+
 async function teste(message, serverQueue) {
   let recupera = async () => {
-    return searchMusic(message, serverQueue);
+    return searchByKeyword(message, serverQueue);
   }
 
   const listaVideos = await recupera().then((value) => {
@@ -397,5 +389,6 @@ async function teste(message, serverQueue) {
 
   return listaVideos;
 }
+
 
 client.login(process.env.DISCORD_TOKEN); // starts the bot up
