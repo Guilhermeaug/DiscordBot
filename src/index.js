@@ -2,12 +2,15 @@ import Discord from "discord.js";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
 
-dotenv.config();
-
 import { Ranking } from "./Hltv/hltvLeaderBoard.js";
+
+import {addMusicRequest, skipSong, searchByKeyword, playWithSearchParams} from "./Music/music.js" 
+
+dotenv.config();
 // const music = require("./Music/music.js")
 
 const client = new Discord.Client();
+let songRequestMessage = new Discord.Message();
 
 // const StringBuilder = require("string-builder");
 
@@ -68,6 +71,8 @@ const randomMessages = [
   "Flagelado",
   "Bolsonaro",
   "Bolsa de colostomia",
+  "Planta de defunto",
+  "Pelo laudo da perícia esse toma linguiça"
 ];
 
 const sendMessage = (message, messageToPeople) => {
@@ -99,11 +104,9 @@ function randomMessage(message) {
   message.channel.send(randomMessages[randomNumber]);
 }
 
-let mensagem = new Discord.Message();
-
 client.on("message", (message) => {
   if (message.author.bot) return;
-  if (!message.content.startsWith("?")) return;
+  //if (!message.content.startsWith("?")) return;
 
   // const serverQueue = music.queue.get(message.guild.id);
 
@@ -125,8 +128,7 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?play")) {
-    //execute(message, serverQueue, null);
-    music.Execute(message, serverQueue, null);
+    addMusicRequest(message);
   }
 
   if (message.content.startsWith("?queue")) {
@@ -138,7 +140,7 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?skip")) {
-    music.SkipQueue(message, serverQueue);
+    skipSong(message);
   }
 
   if (message.content.startsWith("?volume")) {
@@ -146,19 +148,19 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?search")) {
-    mensagem = message;
-    //arromba(message, serverQueue);
-    music.Arromba(message, serverQueue);
+    songRequestMessage = message;
+    //music.Arromba(message, serverQueue);
+    searchByKeyword(message);
   }
 
   if (message.content.startsWith("?clear")) {
     music.ClearQueue(message, serverQueue);
   }
 
-  if (!message.content.startsWith("?") && mensagem.content !== "") {
-    if (message.author === mensagem.author) {
-      music.Execute(message, serverQueue, music.listaVideos);
-      mensagem.content = "";
+  if (!message.content.startsWith("?")) {
+    if (message.author === songRequestMessage.author) {
+      playWithSearchParams(message);
+      songRequestMessage.content = "";
     }
   }
 
@@ -173,7 +175,7 @@ client.on("message", (message) => {
   if (message.content.startsWith("?hltv")) {
     Ranking(message);
   }
-  
+
 });
 
 client.login(process.env.DISCORD_TOKEN);
