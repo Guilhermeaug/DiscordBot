@@ -1,9 +1,10 @@
-const Discord = require("discord.js");
-const url = "https://www.hltv.org/ranking/teams/";
-const emoji = require("node-emoji");
-const puppeteer = require('puppeteer');
+import Discord from "discord.js";
+import emoji from "node-emoji";
+import puppeteer from "puppeteer";
 
-let scrape = async () => {
+const url = "https://www.hltv.org/ranking/teams/";
+
+const scrape = async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
@@ -28,7 +29,7 @@ let scrape = async () => {
 
 }
 
-module.exports.Ranking = async (message) => {
+const Ranking = async (message) => {
   const tabelaTimes = await scrape();
 
   const embed = new Discord.MessageEmbed()
@@ -50,6 +51,9 @@ module.exports.Ranking = async (message) => {
     .setTimestamp();
 
   message.channel.send(embed);
+  
 }
 
-
+export {
+  Ranking
+};

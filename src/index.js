@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// const hltvLeaderBoard = require("./Hltv/hltvLeaderBoard.js");
+import { Ranking } from "./Hltv/hltvLeaderBoard.js";
 // const music = require("./Music/music.js")
 
 const client = new Discord.Client();
@@ -171,8 +171,9 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?hltv")) {
-    hltvLeaderBoard.Ranking(message);
+    Ranking(message);
   }
+  
 });
 
 client.login(process.env.DISCORD_TOKEN);
