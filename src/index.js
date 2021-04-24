@@ -113,7 +113,7 @@ client.on("message", (message) => {
   const content = message.content.split(" ")[0].substr(1); // gets the command name
 
   if (content !== "") {
-    peopleMessages.map((el) => {
+    peopleMessages.forEach((el) => {
       if (el.people === content) {
         sendMessage(message, el.message);
       }

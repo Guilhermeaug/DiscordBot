@@ -4,8 +4,9 @@ import ytdl from "discord-ytdl-core";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
 
-dotenv.config();
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
+
+dotenv.config();
 
 const { google } = pkg;
 const youtube = google.youtube({
@@ -24,21 +25,57 @@ export const addMusicRequest = async (message, choosenUrl) => {
       "Você não está em um canal de voz, Leticia, Hehehehe"
     );
 
-  const youtubeUrl = choosenUrl ? choosenUrl : message.content.split(" ")[1].substr(0);
+  const youtubeUrl = choosenUrl
+    ? choosenUrl
+    : message.content.split(" ")[1].substr(0);
 
   if (ytdl.validateURL(youtubeUrl)) {
-    const musicInfo = await ytdl.getInfo(youtubeUrl);
-    const musicTitle = musicInfo.videoDetails.title;
-    const musicLength = musicInfo.videoDetails.lengthSeconds;
+    if (youtubeUrl.includes("list")) {
+      getVideosFromPlaylistUrl(message, youtubeUrl);
+    } else {
+      const musicInfo = await ytdl.getInfo(youtubeUrl);
+      const musicTitle = musicInfo.videoDetails.title;
+      const musicLength = musicInfo.videoDetails.lengthSeconds;
+      
+      songQueue.push({
+        title: musicTitle,
+        url: youtubeUrl,
+        lenght: musicLength,
+      });
 
-    songQueue.push({ title: musicTitle, url: youtubeUrl, lenght: musicLength });
-
-    if (!isPlaying) {
-      isPlaying = true;
-      playSong(message, songQueue.shift());
+      if (!isPlaying) {
+        isPlaying = true;
+        playSong(message, songQueue.shift());
+      }
     }
   } else {
     return message.channel.send("Insira uma URL válida corno");
+  }
+};
+
+const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
+  const playlistId = youtubeUrl.split("=")[2];
+
+  const request = async () => {
+    let results = youtube.playlistItems
+      .list({
+        part: "contentDetails",
+        playlistId: playlistId,
+        maxResults: 50,
+      })
+      .catch(console.error);
+    return results;
+  };
+
+  const videos = await request();
+
+  const arrayUrlVideos =  videos.data.items.map((el) => {
+    const url = `https://www.youtube.com/watch?v=${el.contentDetails.videoId}`;
+    return url;
+  });
+
+  for(let i = 0; i < arrayUrlVideos.length; i++){
+    await addMusicRequest(message, arrayUrlVideos[i]);
   }
 };
 
@@ -183,10 +220,9 @@ export const searchByKeyword = async (message) => {
   message.channel.send(embed);
 
   videosListFromApi = listaVideos;
-
 };
 
 export const playWithSearchParams = async (message) => {
   const selectedIndex = message.content;
-  addMusicRequest(message, videosListFromApi[selectedIndex -1].url);
-}
+  addMusicRequest(message, videosListFromApi[selectedIndex - 1].url);
+};
