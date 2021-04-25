@@ -1,6 +1,7 @@
 import { MessageEmbed } from "discord.js";
-import { Menu } from "discord.js-menu";
+import pkg from "discord.js-menu";
 import format from "format-duration";
+const { Menu } = pkg;
 
 const createPages = async (message, videoList, title) => {
   const pages = [];
