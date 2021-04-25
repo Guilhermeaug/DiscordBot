@@ -2,6 +2,7 @@ import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
 import emoji from "node-emoji";
+import { embedVideoList, helpMenu, queueMenu } from "../Utils/embededTemplates.js";
 import dotenv from "dotenv";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
@@ -36,12 +37,14 @@ export const addMusicRequest = async (message, choosenUrl) => {
       const musicInfo = await ytdl.getInfo(youtubeUrl);
       const musicTitle = musicInfo.videoDetails.title;
       const musicLength = musicInfo.videoDetails.lengthSeconds;
-      
+
       songQueue.push({
         title: musicTitle,
         url: youtubeUrl,
         lenght: musicLength,
       });
+
+      console.log(songQueue.length);
 
       if (!isPlaying) {
         isPlaying = true;
@@ -61,7 +64,7 @@ const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
       .list({
         part: "contentDetails",
         playlistId: playlistId,
-        maxResults: 50,
+        maxResults: 20,
       })
       .catch(console.error);
     return results;
@@ -69,12 +72,12 @@ const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
 
   const videos = await request();
 
-  const arrayUrlVideos =  videos.data.items.map((el) => {
+  const arrayUrlVideos = videos.data.items.map((el) => {
     const url = `https://www.youtube.com/watch?v=${el.contentDetails.videoId}`;
     return url;
   });
 
-  for(let i = 0; i < arrayUrlVideos.length; i++){
+  for (let i = 0; i < arrayUrlVideos.length; i++) {
     await addMusicRequest(message, arrayUrlVideos[i]);
   }
 };
@@ -111,19 +114,6 @@ export const playSong = (message, currentSong) => {
   }
 };
 
-export const skipSong = (message) => {
-  if (!message.member.voice.channel) {
-    return message.channel.send(
-      "Você não está em um canal de voz, Leticia, Hehehehe"
-    );
-  }
-  if (!isPlaying) {
-    return message.channel.send("Não tem música na fila jumento quadrado");
-  } else {
-    playSong(message, songQueue.shift());
-  }
-};
-
 export const searchByKeyword = async (message) => {
   const args = message.content.split(" ");
   let removed = args.splice(0, 1);
@@ -135,7 +125,7 @@ export const searchByKeyword = async (message) => {
         q: query,
         part: "snippet",
         type: "video",
-        maxResults: 10,
+        maxResults: 20,
       })
       .catch(console.error);
 
@@ -158,71 +148,34 @@ export const searchByKeyword = async (message) => {
       listaVideos.push(musica);
     });
 
+    videosListFromApi = listaVideos;
+
     return listaVideos;
+    
   });
 
-  const embed = new Discord.MessageEmbed()
-    .setColor(5444442)
-    .setTitle("Escolha a música dentre as opções abaixo:")
-    .setImage(
-      "https://cdn.discordapp.com/avatars/796845658777976903/24dca11d3c97ad3e8e0855f7ef2bbfc0.png"
-    )
-    .setFooter(
-      "Tenha cuidado!",
-      "https://64.media.tumblr.com/b91d7d1bf5b90c1856393b9a0bca6f03/54f93eb2c4a807f3-10/s250x400/de82b02d86ce6e08b2d0ecd578c055bbb8f64d2c.png"
-    )
-    .addFields(
-      {
-        name: `${emoji.get("one")} : ${listaVideos[0].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("two")} : ${listaVideos[1].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("three")} : ${listaVideos[2].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("four")} : ${listaVideos[3].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("five")} : ${listaVideos[4].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("six")} : ${listaVideos[5].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("seven")} : ${listaVideos[6].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("eight")} : ${listaVideos[7].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("nine")} : ${listaVideos[8].title}`,
-        value: "\u200b",
-      },
-      {
-        name: `${emoji.get("one")}${emoji.get("zero")} : ${
-          listaVideos[9].title
-        }`,
-        value: "\u200b",
-      }
-    )
-    .setTimestamp();
-
-  message.channel.send(embed);
-
-  videosListFromApi = listaVideos;
+  embedVideoList(message, listaVideos, "Escolha uma das opções abaixo");
+  
 };
 
 export const playWithSearchParams = async (message) => {
   const selectedIndex = message.content;
   addMusicRequest(message, videosListFromApi[selectedIndex - 1].url);
 };
+
+export const skipSong = (message) => {
+  if (!message.member.voice.channel) {
+    return message.channel.send(
+      "Você não está em um canal de voz, Leticia, Hehehehe"
+    );
+  }
+  if (!isPlaying) {
+    return message.channel.send("Não tem música na fila jumento quadrado");
+  } else {
+    playSong(message, songQueue.shift());
+  }
+};
+
+export const showQueue = (message) => {
+  queueMenu(message, songQueue);
+}

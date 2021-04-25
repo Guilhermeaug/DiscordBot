@@ -1,18 +1,20 @@
 import Discord from "discord.js";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
-
 import { Ranking } from "./Hltv/hltvLeaderBoard.js";
-
-import {addMusicRequest, skipSong, searchByKeyword, playWithSearchParams} from "./Music/music.js" 
+import {
+  addMusicRequest,
+  skipSong,
+  searchByKeyword,
+  playWithSearchParams,
+  showQueue
+} from "./Music/music.js";
+import { helpMenu} from './Utils/embededTemplates.js';
 
 dotenv.config();
-// const music = require("./Music/music.js")
 
 const client = new Discord.Client();
 let songRequestMessage = new Discord.Message();
-
-// const StringBuilder = require("string-builder");
 
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
@@ -72,7 +74,7 @@ const randomMessages = [
   "Bolsonaro",
   "Bolsa de colostomia",
   "Planta de defunto",
-  "Pelo laudo da perícia esse toma linguiça"
+  "Pelo laudo da perícia esse toma linguiça",
 ];
 
 const sendMessage = (message, messageToPeople) => {
@@ -132,7 +134,7 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?queue")) {
-    music.ShowQueue(message, serverQueue);
+    showQueue(message);
   }
 
   if (message.content.startsWith("?clean")) {
@@ -176,6 +178,9 @@ client.on("message", (message) => {
     Ranking(message);
   }
 
+  if (message.content === "?help") {
+    helpMenu(message);
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);
