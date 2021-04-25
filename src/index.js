@@ -7,14 +7,19 @@ import {
   skipSong,
   searchByKeyword,
   playWithSearchParams,
-  showQueue
+  showQueue,
+  clearQueue,
+  moveQueue
 } from "./Music/music.js";
-import { helpMenu} from './Utils/embededTemplates.js';
+import { helpMenu } from "./Utils/embededTemplates.js";
 
 dotenv.config();
 
 const client = new Discord.Client();
+
+//variaveis de controle para a busca via palavras-chave
 let songRequestMessage = new Discord.Message();
+let isSearching = false;
 
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
@@ -74,7 +79,7 @@ const randomMessages = [
   "Bolsonaro",
   "Bolsa de colostomia",
   "Planta de defunto",
-  "Pelo laudo da perícia esse toma linguiça",
+  "Pelo laudo da perícia, esse toma linguiça",
 ];
 
 const sendMessage = (message, messageToPeople) => {
@@ -107,10 +112,12 @@ function randomMessage(message) {
 }
 
 client.on("message", (message) => {
-  if (message.author.bot) return;
-  //if (!message.content.startsWith("?")) return;
+  if (message.author.bot) {
+    message
+      .delete({ timeout: 120000 })
+  }
 
-  // const serverQueue = music.queue.get(message.guild.id);
+  if (!message.content.startsWith("?") && isSearching === false) return;
 
   const content = message.content.split(" ")[0].substr(1); // gets the command name
 
@@ -125,6 +132,7 @@ client.on("message", (message) => {
   if (message.content.startsWith("?chuteLeroi")) {
     kick(message);
   }
+
   if (message.content.startsWith("?eu")) {
     randomMessage(message);
   }
@@ -137,41 +145,32 @@ client.on("message", (message) => {
     showQueue(message);
   }
 
-  if (message.content.startsWith("?clean")) {
-    music.CleanQueue(message, serverQueue);
+  if(message.content.startsWith("?move")){
+    moveQueue(message);
+  }
+
+  if (message.content.startsWith("?clear")) {
+    clearQueue(message);
   }
 
   if (message.content.startsWith("?skip")) {
     skipSong(message);
   }
 
-  if (message.content.startsWith("?volume")) {
-    music.ChangeVolume(message, serverQueue);
-  }
-
   if (message.content.startsWith("?search")) {
     songRequestMessage = message;
-    //music.Arromba(message, serverQueue);
+    isSearching = true;
     searchByKeyword(message);
-  }
-
-  if (message.content.startsWith("?clear")) {
-    music.ClearQueue(message, serverQueue);
   }
 
   if (!message.content.startsWith("?")) {
     if (message.author === songRequestMessage.author) {
-      playWithSearchParams(message);
-      songRequestMessage.content = "";
+      if (message.content >= 1 && message.content <= 10) {
+        playWithSearchParams(message);
+        songRequestMessage.content = "";
+        isSearching = false;
+      }
     }
-  }
-
-  if (message.content.startsWith("?teste")) {
-    message.channel.send(
-      `Tô pronto para arrombar! {0} {1}`,
-      emoji.get("white_check_mark"),
-      emoji.get("dragon_face")
-    );
   }
 
   if (message.content.startsWith("?hltv")) {

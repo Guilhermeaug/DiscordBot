@@ -1,8 +1,9 @@
 import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
+import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
+import arrayMove from "array-move";
 import emoji from "node-emoji";
-import { embedVideoList, helpMenu, queueMenu } from "../Utils/embededTemplates.js";
 import dotenv from "dotenv";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
@@ -37,14 +38,14 @@ export const addMusicRequest = async (message, choosenUrl) => {
       const musicInfo = await ytdl.getInfo(youtubeUrl);
       const musicTitle = musicInfo.videoDetails.title;
       const musicLength = musicInfo.videoDetails.lengthSeconds;
+      const userRequested = message.author.username;
 
       songQueue.push({
         title: musicTitle,
         url: youtubeUrl,
-        lenght: musicLength,
+        length: musicLength,
+        userRequested: userRequested,
       });
-
-      console.log(songQueue.length);
 
       if (!isPlaying) {
         isPlaying = true;
@@ -64,7 +65,7 @@ const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
       .list({
         part: "contentDetails",
         playlistId: playlistId,
-        maxResults: 20,
+        maxResults: 50,
       })
       .catch(console.error);
     return results;
@@ -89,7 +90,7 @@ export const playSong = (message, currentSong) => {
 
   if (currentSong) {
     isPlaying = true;
-    message.channel.send(`A rádio Sr.Cabeça apresenta ${currentSong.title}`);
+    //message.channel.send(`A rádio Sr.Cabeça apresenta ${currentSong.title}`);
 
     const stream = ytdl(currentSong.url, {
       filter: "audioonly",
@@ -125,7 +126,7 @@ export const searchByKeyword = async (message) => {
         q: query,
         part: "snippet",
         type: "video",
-        maxResults: 20,
+        maxResults: 10,
       })
       .catch(console.error);
 
@@ -151,16 +152,16 @@ export const searchByKeyword = async (message) => {
     videosListFromApi = listaVideos;
 
     return listaVideos;
-    
   });
 
-  embedVideoList(message, listaVideos, "Escolha uma das opções abaixo");
-  
+  searchMenu(message, listaVideos);
 };
 
 export const playWithSearchParams = async (message) => {
   const selectedIndex = message.content;
   addMusicRequest(message, videosListFromApi[selectedIndex - 1].url);
+
+  message.channel.send(`${emoji.get('white_check_mark')} Música adicionada com sucesso!`)
 };
 
 export const skipSong = (message) => {
@@ -177,5 +178,28 @@ export const skipSong = (message) => {
 };
 
 export const showQueue = (message) => {
-  queueMenu(message, songQueue);
+  if (songQueue.length > 0) {
+    queueMenu(message, songQueue);
+  } else {
+    return message.channel.send(
+      "Não há musica alguma na fila, jumento imprestável, hehe"
+    );
+  }
+};
+
+export const clearQueue = (message) => {
+  if (!message.member.voice.channel) {
+    return message.channel.send(
+      "Você não está em um canal de voz, Leticia, Hehehehe"
+    );
+  }
+
+  songQueue.splice(0, songQueue.length);
+};
+
+export const moveQueue = (message) => {
+  const positionToMove = message.content.split(" ")[1].substr(0);
+  if(songQueue.length > 0){
+    arrayMove.mutate(songQueue, positionToMove - 1, 0);
+  }
 }
