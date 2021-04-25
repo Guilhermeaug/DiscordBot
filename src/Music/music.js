@@ -161,7 +161,13 @@ export const playWithSearchParams = async (message) => {
   const selectedIndex = message.content;
   addMusicRequest(message, videosListFromApi[selectedIndex - 1].url);
 
-  message.channel.send(`${emoji.get('white_check_mark')} Música adicionada com sucesso!`)
+  message.channel.send(
+    `${emoji.get(
+      "white_check_mark"
+    )} Música adicionada com sucesso na posição \u0060${
+      songQueue.length + 1
+    }\u0060 !`
+  );
 };
 
 export const skipSong = (message) => {
@@ -195,11 +201,17 @@ export const clearQueue = (message) => {
   }
 
   songQueue.splice(0, songQueue.length);
+  message.channel.send(
+    `${emoji.get(
+      "white_check_mark"
+    )} A fila está limpa, igual a bundinha do leroy!`
+  );
 };
 
 export const moveQueue = (message) => {
   const positionToMove = message.content.split(" ")[1].substr(0);
-  if(songQueue.length > 0){
+  if (songQueue.length > 0) {
     arrayMove.mutate(songQueue, positionToMove - 1, 0);
+    message.channel.send(`${emoji.get('white_check_mark')} A música da posição \u0060${positionToMove}\u0060 é a próxima da fila`);
   }
-}
+};
