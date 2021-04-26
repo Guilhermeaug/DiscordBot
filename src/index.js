@@ -9,7 +9,7 @@ import {
   playWithSearchParams,
   showQueue,
   clearQueue,
-  moveQueue
+  moveQueue,
 } from "./Music/music.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
 
@@ -112,10 +112,7 @@ function randomMessage(message) {
 }
 
 client.on("message", (message) => {
-  if (message.author.bot) {
-    message
-      .delete({ timeout: 120000 })
-  }
+  if (message.author.bot) return;
 
   if (!message.content.startsWith("?") && isSearching === false) return;
 
@@ -145,7 +142,7 @@ client.on("message", (message) => {
     showQueue(message);
   }
 
-  if(message.content.startsWith("?move")){
+  if (message.content.startsWith("?move")) {
     moveQueue(message);
   }
 
