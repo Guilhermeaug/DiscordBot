@@ -1,3 +1,5 @@
+import emoji from "node-emoji";
+
 export const peopleMessages = [
   {
     people: "leroy",
