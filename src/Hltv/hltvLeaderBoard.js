@@ -24,8 +24,9 @@ const scrape = async () => {
 
   })
 
-  browser.close()
-  return result
+  browser.close();
+  
+  return result;
 
 }
 

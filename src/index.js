@@ -10,7 +10,7 @@ import {
   clearQueue,
   moveQueue,
 } from "./Music/music.js";
-import { peopleMessages, randomMessages } from "./Utils/importantData.js";
+import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
 
 dotenv.config();
@@ -27,7 +27,7 @@ client.once("ready", () => {
   client.user.setPresence({
     game: {
       name: "arrombando cu de curioso",
-      type: "TRABALHANDO PESADO",
+      type: "playing",
     },
     status: "online",
   });
@@ -117,6 +117,12 @@ client.on("message", (message) => {
         playWithSearchParams(message);
         songRequestMessage.content = "";
         isSearching = false;
+      } else if (message.content.toUpperCase() === "CANCEL") {
+        songRequestMessage = new Discord.Message();
+        isSearching = false;
+        message.channel.send(
+          `${emoji.get("white_check_mark")} A busca foi cancelada`
+        );
       }
     }
   }
