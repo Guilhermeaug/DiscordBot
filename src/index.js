@@ -1,5 +1,4 @@
 import Discord from "discord.js";
-import emoji from "node-emoji";
 import dotenv from "dotenv";
 import { Ranking } from "./Hltv/hltvLeaderBoard.js";
 import {
@@ -11,6 +10,7 @@ import {
   clearQueue,
   moveQueue,
 } from "./Music/music.js";
+import { peopleMessages, randomMessages } from "./Utils/importantData.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
 
 dotenv.config();
@@ -23,64 +23,15 @@ let isSearching = false;
 
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
+
+  client.user.setPresence({
+    game: {
+      name: "arrombando cu de curioso",
+      type: "TRABALHANDO PESADO",
+    },
+    status: "online",
+  });
 });
-
-const peopleMessages = [
-  {
-    people: "leroy",
-    message: "Leeeeerooooyyyyy JEEENNNNKINS",
-  },
-  {
-    people: "lett",
-    message: `<3 ${emoji.get("couplekiss")}`,
-  },
-  {
-    people: "thaix",
-    message: `<3 ${emoji.get("heart")} ${emoji.get("couplekiss")}`,
-  },
-  {
-    people: "pablo",
-    message: "talarico",
-  },
-  {
-    people: "eliza",
-    message: `<3 ${emoji.get("heart")}`,
-  },
-  {
-    people: "gustavo",
-    message: "tubarão",
-  },
-  {
-    people: "russo",
-    message: "desgraçado",
-  },
-  {
-    people: "jair",
-    message: "nu cê tá fraquin zé",
-  },
-  {
-    people: "anna",
-    message: "balombra",
-  },
-  {
-    people: "guilherme",
-    message: "!play Leno Brega Trepada em Cuiabá",
-  },
-];
-
-const randomMessages = [
-  "Tu é muito estranho",
-  "puta",
-  "nem te conheço",
-  "Para de me chamar",
-  "CHATOOO PRA CARAIO",
-  "Pensei que você tinha morrido",
-  "Flagelado",
-  "Bolsonaro",
-  "Bolsa de colostomia",
-  "Planta de defunto",
-  "Pelo laudo da perícia, esse toma linguiça",
-];
 
 const sendMessage = (message, messageToPeople) => {
   message.channel.send(messageToPeople);
