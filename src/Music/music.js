@@ -5,6 +5,7 @@ import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
 import arrayMove from "array-move";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
+import fs from "fs";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
 
@@ -40,12 +41,23 @@ export const addMusicRequest = async (message, choosenUrl) => {
       const musicLength = musicInfo.videoDetails.lengthSeconds;
       const userRequested = message.author.username;
 
-      songQueue.push({
-        title: musicTitle,
-        url: youtubeUrl,
-        length: musicLength,
-        userRequested: userRequested,
-      });
+      if (message.content.includes("-e")) {
+        songQueue.push({
+          title: musicTitle,
+          url: youtubeUrl,
+          length: musicLength,
+          userRequested: userRequested,
+          earrape: true,
+        });
+      } else {
+        songQueue.push({
+          title: musicTitle,
+          url: youtubeUrl,
+          length: musicLength,
+          userRequested: userRequested,
+          earrape: false,
+        });
+      }
 
       if (!isPlaying) {
         isPlaying = true;
@@ -91,13 +103,22 @@ export const playSong = (message, currentSong) => {
   if (currentSong) {
     isPlaying = true;
     //message.channel.send(`A rádio Sr.Cabeça apresenta ${currentSong.title}`);
-
-    const stream = ytdl(currentSong.url, {
-      filter: "audioonly",
-      opusEncoded: false,
-      fmt: "mp3",
-      encoderArgs: ["-af", "bass=g=10,dynaudnorm=f=200"],
-    });
+    let stream;
+    if (currentSong.earrape) {
+      stream = ytdl(currentSong.url, {
+        filter: "audioonly",
+        opusEncoded: false,
+        fmt: "mp3",
+        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=200"],
+      });
+    } else {
+      stream = ytdl(currentSong.url, {
+        filter: "audioonly",
+        opusEncoded: false,
+        fmt: "mp3",
+        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200"],
+      });
+    }
 
     message.member.voice.channel.join().then((connection) => {
       let dispatcher = connection
@@ -212,6 +233,10 @@ export const moveQueue = (message) => {
   const positionToMove = message.content.split(" ")[1].substr(0);
   if (songQueue.length > 0) {
     arrayMove.mutate(songQueue, positionToMove - 1, 0);
-    message.channel.send(`${emoji.get('white_check_mark')} A música da posição \u0060${positionToMove}\u0060 é a próxima da fila`);
+    message.channel.send(
+      `${emoji.get("white_check_mark")} A música \u0060${
+        songQueue[0].title
+      }\u0060 é a próxima da fila`
+    );
   }
 };

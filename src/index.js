@@ -9,9 +9,11 @@ import {
   showQueue,
   clearQueue,
   moveQueue,
+  playSongSpotify
 } from "./Music/music.js";
 import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
+import emoji from "node-emoji";
 
 dotenv.config();
 
@@ -27,7 +29,7 @@ client.once("ready", () => {
   client.user.setPresence({
     game: {
       name: "arrombando cu de curioso",
-      type: "playing",
+      type: "PLAYING",
     },
     status: "online",
   });
