@@ -8,8 +8,7 @@ import {
   playWithSearchParams,
   showQueue,
   clearQueue,
-  moveQueue,
-  playSongSpotify
+  moveQueue
 } from "./Music/music.js";
 import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
@@ -25,14 +24,12 @@ let isSearching = false;
 
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
-
-  client.user.setPresence({
-    game: {
-      name: "arrombando cu de curioso",
-      type: "PLAYING",
-    },
-    status: "online",
-  });
+  
+  // Set the client user's presence
+  client.user.setPresence({ activity: { name: 'comendo cu de curioso' }, status: 'PLAYING' })
+    .then(console.log)
+    .catch(console.error);
+  
 });
 
 const sendMessage = (message, messageToPeople) => {
