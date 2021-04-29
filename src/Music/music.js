@@ -1,11 +1,11 @@
 import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
+import SpotifyToYoutube from 'spotify-to-youtube'
 import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
 import arrayMove from "array-move";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
-import fs from "fs";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
 

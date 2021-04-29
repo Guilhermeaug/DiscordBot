@@ -8,8 +8,13 @@ import {
   playWithSearchParams,
   showQueue,
   clearQueue,
-  moveQueue
+  moveQueue,
 } from "./Music/music.js";
+import {
+  getPostFromSubredditAmouranth,
+  getPostFromSubredditFox,
+  getPostFromSubredditNsfw
+} from "./Reddit/reddit.js";
 import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
 import emoji from "node-emoji";
@@ -24,12 +29,12 @@ let isSearching = false;
 
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
-  
+
   // Set the client user's presence
-  client.user.setPresence({ activity: { name: 'comendo cu de curioso' }, status: 'PLAYING' })
-    .then(console.log)
-    .catch(console.error);
-  
+  client.user.setPresence({
+    activity: { name: "comendo cu de curioso" },
+    status: "PLAYING",
+  });
 });
 
 const sendMessage = (message, messageToPeople) => {
@@ -78,6 +83,20 @@ client.on("message", (message) => {
 
   if (message.content.startsWith("?chuteLeroi")) {
     kick(message);
+  }
+
+  if (message.content.startsWith("?amouranth")) {
+    getPostFromSubredditAmouranth(message);
+  }
+
+  
+
+  if (message.content.startsWith("?nsfw")) {
+    getPostFromSubredditNsfw(message);
+  }
+
+  if (message.content.startsWith("?indiefox")) {
+    getPostFromSubredditFox(message);
   }
 
   if (message.content.startsWith("?eu")) {
