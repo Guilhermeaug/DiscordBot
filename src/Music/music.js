@@ -1,7 +1,7 @@
 import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
-import SpotifyToYoutube from 'spotify-to-youtube'
+import SpotifyToYoutube from "spotify-to-youtube";
 import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
 import arrayMove from "array-move";
 import emoji from "node-emoji";
@@ -21,6 +21,10 @@ const songQueue = [];
 let videosListFromApi = [];
 
 let isPlaying = false;
+let isSearching = false;
+let lastMessage;
+let channelClient;
+let alreadySearched = false;
 
 export const addMusicRequest = async (message, choosenUrl) => {
   if (!message.member.voice.channel)
@@ -136,46 +140,88 @@ export const playSong = (message, currentSong) => {
   }
 };
 
-export const searchByKeyword = async (message) => {
-  const args = message.content.split(" ");
-  let removed = args.splice(0, 1);
-  const query = args.join(" ");
+export const searchByKeyword = async (message, client) => {
+  if (!isSearching) {
+    isSearching = true;
 
-  let request = async () => {
-    var results = youtube.search
-      .list({
-        q: query,
-        part: "snippet",
-        type: "video",
-        maxResults: 10,
-      })
-      .catch(console.error);
+    const args = message.content.split(" ");
+    let removed = args.splice(0, 1);
+    const query = args.join(" ");
 
-    return results;
-  };
+    lastMessage = message;
+    channelClient = client;
 
-  const listaVideos = await request().then((results) => {
-    const listaVideos = [];
-    const listItems = results.data.items;
+    let request = async () => {
+      var results = youtube.search
+        .list({
+          q: query,
+          part: "snippet",
+          type: "video",
+          maxResults: 10,
+        })
+        .catch(console.error);
 
-    listItems.forEach((item) => {
-      var musica = { url: "", title: "" };
+      return results;
+    };
 
-      const videoId = item.id.videoId;
-      const videoTitle = item.snippet.title;
+    const listaVideos = await request().then((results) => {
+      const listaVideos = [];
+      const listItems = results.data.items;
 
-      musica.url = `https://www.youtube.com/watch?v=${videoId}`;
-      musica.title = videoTitle;
+      listItems.forEach((item) => {
+        var musica = { url: "", title: "" };
 
-      listaVideos.push(musica);
+        const videoId = item.id.videoId;
+        const videoTitle = item.snippet.title;
+
+        musica.url = `https://www.youtube.com/watch?v=${videoId}`;
+        musica.title = videoTitle;
+
+        listaVideos.push(musica);
+      });
+
+      videosListFromApi = listaVideos;
+
+      return listaVideos;
     });
 
-    videosListFromApi = listaVideos;
+    searchMenu(message, listaVideos);
 
-    return listaVideos;
-  });
+    channelClient.on("message", listenerToOption);
+    setTimeout(function () {
+      if (!alreadySearched) {
+        channelClient.removeListener("message", listenerToOption);
+        message.channel.send("Você foi lerdo demais e a busca foi cancelada");
+      } else {
+        alreadySearched = false;
+      }
+      isSearching = false;
+    }, 8000);
+  }
+};
 
-  searchMenu(message, listaVideos);
+const listenerToOption = (option) => {
+  let message = lastMessage;
+
+  if (!option) return;
+
+  if (!option.content.startsWith("?")) {
+    if (message.author === option.author) {
+      if (option.content >= 1 && option.content <= 10) {
+        channelClient.removeListener("message", listenerToOption);
+        playWithSearchParams(option);
+        alreadySearched = true;
+        isSearching = false;
+      } else if (option.content.toUpperCase() === "CANCEL") {
+        channelClient.removeListener("message", listenerToOption);
+        message.channel.send(
+          `${emoji.get("white_check_mark")} A busca foi cancelada`
+        );
+        alreadySearched = true;
+        isSearching = false;
+      }
+    }
+  }
 };
 
 export const playWithSearchParams = async (message) => {

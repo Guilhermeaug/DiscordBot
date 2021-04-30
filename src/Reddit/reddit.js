@@ -35,7 +35,7 @@ export const getPostFromSubredditFox = async (message) => {
 };
 
 export const getPostFromSubredditNsfw = async (message) => {
-  const post = await r.getSubreddit("nsfw").getRandomSubmission();
+  const post = await r.getSubreddit("pornhub").getRandomSubmission();
 
   if (!post.url.includes(".jpg")) {
     getPostFromSubredditNsfw(message);
@@ -45,7 +45,6 @@ export const getPostFromSubredditNsfw = async (message) => {
 };
 
 const redditPostToEmbed = (message, post) => {
-  console.log(post.url);
   let image = post.url;
 
   const embed = new Discord.MessageEmbed()

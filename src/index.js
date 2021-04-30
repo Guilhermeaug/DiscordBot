@@ -23,10 +23,6 @@ dotenv.config();
 
 const client = new Discord.Client();
 
-//variaveis de controle para a busca via palavras-chave
-let songRequestMessage = new Discord.Message();
-let isSearching = false;
-
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
 
@@ -69,7 +65,7 @@ function randomMessage(message) {
 client.on("message", (message) => {
   if (message.author.bot) return;
 
-  if (!message.content.startsWith("?") && isSearching === false) return;
+  if (!message.content.startsWith("?")) return;
 
   const content = message.content.split(" ")[0].substr(1); // gets the command name
 
@@ -88,8 +84,6 @@ client.on("message", (message) => {
   if (message.content.startsWith("?amouranth")) {
     getPostFromSubredditAmouranth(message);
   }
-
-  
 
   if (message.content.startsWith("?nsfw")) {
     getPostFromSubredditNsfw(message);
@@ -124,25 +118,7 @@ client.on("message", (message) => {
   }
 
   if (message.content.startsWith("?search")) {
-    songRequestMessage = message;
-    isSearching = true;
-    searchByKeyword(message);
-  }
-
-  if (!message.content.startsWith("?")) {
-    if (message.author === songRequestMessage.author) {
-      if (message.content >= 1 && message.content <= 10) {
-        playWithSearchParams(message);
-        songRequestMessage.content = "";
-        isSearching = false;
-      } else if (message.content.toUpperCase() === "CANCEL") {
-        songRequestMessage = new Discord.Message();
-        isSearching = false;
-        message.channel.send(
-          `${emoji.get("white_check_mark")} A busca foi cancelada`
-        );
-      }
-    }
+    searchByKeyword(message, client);
   }
 
   if (message.content.startsWith("?hltv")) {
