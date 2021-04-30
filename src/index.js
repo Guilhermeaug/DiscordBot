@@ -26,7 +26,6 @@ const client = new Discord.Client();
 client.once("ready", () => {
   console.log("Vou botar para arrombar!");
 
-  // Set the client user's presence
   client.user.setPresence({
     activity: { name: "comendo cu de curioso" },
     status: "PLAYING",
@@ -37,10 +36,10 @@ const sendMessage = (message, messageToPeople) => {
   message.channel.send(messageToPeople);
 };
 
-function randomMessage(message) {
+const randomMessage = (message) => {
   const randomNumber = Math.floor(Math.random() * randomMessages.length);
   message.channel.send(randomMessages[randomNumber]);
-}
+};
 
 client.on("message", (message) => {
   if (message.author.bot) return;
@@ -57,56 +56,61 @@ client.on("message", (message) => {
     });
   }
 
-  if (message.content.startsWith("?amouranth")) {
-    getPostFromSubredditAmouranth(message);
-  }
+  switch (message.content) {
+    case "?amouranth":
+      getPostFromSubredditAmouranth(message);
+      break;
 
-  if (message.content.startsWith("?nsfw")) {
-    getPostFromSubredditNsfw(message);
-  }
+    case "?nsfw":
+      getPostFromSubredditNsfw(message);
+      break;
 
-  if (message.content.startsWith("?indiefox")) {
-    getPostFromSubredditFox(message);
-  }
+    case "?indiefox":
+      getPostFromSubredditFox(message);
+      break;
 
-  if (message.content.startsWith("?men")) {
-    getPostFromSubredditMen(message);
-  }
+    case "?men":
+      getPostFromSubredditMen(message);
+      break;
 
-  if (message.content.startsWith("?eu")) {
-    randomMessage(message);
-  }
+    case "?eu":
+      randomMessage(message);
+      break;
 
-  if (message.content.startsWith("?play")) {
-    addMusicRequest(message);
-  }
+    case "?play":
+      addMusicRequest(message);
+      break;
 
-  if (message.content.startsWith("?queue")) {
-    showQueue(message);
-  }
+    case "?queue":
+      showQueue(message);
+      break;
 
-  if (message.content.startsWith("?move")) {
-    moveQueue(message);
-  }
+    case "?move":
+      moveQueue(message);
+      break;
 
-  if (message.content.startsWith("?clear")) {
-    clearQueue(message);
-  }
+    case "?clear":
+      clearQueue(message);
+      break;
 
-  if (message.content.startsWith("?skip")) {
-    skipSong(message);
-  }
+    case "?skip":
+      skipSong(message);
+      break;
 
-  if (message.content.startsWith("?search")) {
-    searchByKeyword(message, client);
-  }
+    case "?search":
+      searchByKeyword(message, client);
+      break;
 
-  if (message.content.startsWith("?hltv")) {
-    Ranking(message);
-  }
+    case "?hltv":
+      Ranking(message);
+      break;
 
-  if (message.content === "?help") {
-    helpMenu(message);
+    case "?help":
+      helpMenu(message);
+      break;
+
+    default:
+      break;
   }
 });
 

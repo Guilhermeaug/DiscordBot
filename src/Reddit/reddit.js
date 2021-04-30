@@ -65,5 +65,7 @@ const redditPostToEmbed = (message, post) => {
     .setImage(image)
     .setTimestamp();
 
-  message.channel.send(embed);
+  message.channel
+    .send(embed)
+    .then((message) => message.delete({ timeout: 10000 }));
 };
