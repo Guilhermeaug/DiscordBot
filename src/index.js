@@ -41,12 +41,23 @@ const randomMessage = (message) => {
   message.channel.send(randomMessages[randomNumber]);
 };
 
+const clearChannel = async (message, quantity) => {
+  let getMessages;
+  quantity
+    ? (getMessages = await message.channel.messages.fetch({
+        limit: quantity,
+      }))
+    : (getMessages = await message.channel.messages.fetch());
+
+  message.channel.bulkDelete(getMessages);
+};
+
 client.on("message", (message) => {
   if (message.author.bot) return;
 
   if (!message.content.startsWith("?")) return;
 
-  const content = message.content.split(" ")[0].substr(1); // gets the command name
+  const content = message.content.split(" ")[0].substr(1);
 
   if (content !== "") {
     peopleMessages.forEach((el) => {
@@ -54,6 +65,13 @@ client.on("message", (message) => {
         sendMessage(message, el.message);
       }
     });
+  }
+
+  if (message.content.includes("?clearChannel")) {
+    const messagesToDelete = message.content.split(" ")[1];
+    const quantity = parseInt(messagesToDelete, 10);
+
+    clearChannel(message, quantity);
   }
 
   switch (message.content) {
