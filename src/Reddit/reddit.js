@@ -44,6 +44,16 @@ export const getPostFromSubredditNsfw = async (message) => {
   }
 };
 
+export const getPostFromSubredditMen = async (message) => {
+  const post = await r.getSubreddit("hotmen").getRandomSubmission();
+
+  if (!post.url.includes(".jpg")) {
+    getPostFromSubredditMen(message);
+  } else {
+    redditPostToEmbed(message, post);
+  }
+};
+
 const redditPostToEmbed = (message, post) => {
   let image = post.url;
 

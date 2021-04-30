@@ -5,7 +5,6 @@ import {
   addMusicRequest,
   skipSong,
   searchByKeyword,
-  playWithSearchParams,
   showQueue,
   clearQueue,
   moveQueue,
@@ -13,7 +12,8 @@ import {
 import {
   getPostFromSubredditAmouranth,
   getPostFromSubredditFox,
-  getPostFromSubredditNsfw
+  getPostFromSubredditNsfw,
+  getPostFromSubredditMen,
 } from "./Reddit/reddit.js";
 import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
@@ -91,6 +91,10 @@ client.on("message", (message) => {
 
   if (message.content.startsWith("?indiefox")) {
     getPostFromSubredditFox(message);
+  }
+
+  if (message.content.startsWith("?men")) {
+    getPostFromSubredditMen(message);
   }
 
   if (message.content.startsWith("?eu")) {
