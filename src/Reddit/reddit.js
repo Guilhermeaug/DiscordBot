@@ -14,43 +14,63 @@ const r = new snoowrap({
   password: process.env.REDDIT_PASS,
 });
 
-export const getPostFromSubredditAmouranth = async (message) => {
-  const post = await r.getSubreddit("Amouranth").getRandomSubmission();
+const isNsfw = (message) => {
+  return message.channel.nsfw;
+};
 
-  if (!post.url.includes(".jpg")) {
-    getPostFromSubredditAmouranth(message);
+export const getPostFromSubredditAmouranth = async (message) => {
+  if (isNsfw(message)) {
+    const post = await r.getSubreddit("Amouranth").getRandomSubmission();
+
+    if (!post.url.includes(".jpg")) {
+      getPostFromSubredditAmouranth(message);
+    } else {
+      redditPostToEmbed(message, post);
+    }
   } else {
-    redditPostToEmbed(message, post);
+    message.channel.send("Só em um canal para maiores de 18 criança");
   }
 };
 
 export const getPostFromSubredditFox = async (message) => {
-  const post = await r.getSubreddit("indiefoxxreddit").getRandomSubmission();
+  if (isNsfw(message)) {
+    const post = await r.getSubreddit("indiefoxxreddit").getRandomSubmission();
 
-  if (!post.url.includes(".jpg")) {
-    getPostFromSubredditFox(message);
+    if (!post.url.includes(".jpg")) {
+      getPostFromSubredditFox(message);
+    } else {
+      redditPostToEmbed(message, post);
+    }
   } else {
-    redditPostToEmbed(message, post);
+    message.channel.send("Só em um canal para maiores de 18 criança");
   }
 };
 
 export const getPostFromSubredditNsfw = async (message) => {
-  const post = await r.getSubreddit("pornhub").getRandomSubmission();
+  if (isNsfw(message)) {
+    const post = await r.getSubreddit("pornhub").getRandomSubmission();
 
-  if (!post.url.includes(".jpg")) {
-    getPostFromSubredditNsfw(message);
+    if (!post.url.includes(".jpg")) {
+      getPostFromSubredditNsfw(message);
+    } else {
+      redditPostToEmbed(message, post);
+    }
   } else {
-    redditPostToEmbed(message, post);
+    message.channel.send("Só em um canal para maiores de 18 criança");
   }
 };
 
 export const getPostFromSubredditMen = async (message) => {
   const post = await r.getSubreddit("hotmen").getRandomSubmission();
 
-  if (!post.url.includes(".jpg")) {
-    getPostFromSubredditMen(message);
+  if (isNsfw(message)) {
+    if (!post.url.includes(".jpg")) {
+      getPostFromSubredditMen(message);
+    } else {
+      redditPostToEmbed(message, post);
+    }
   } else {
-    redditPostToEmbed(message, post);
+    message.channel.send("Só em um canal para maiores de 18 criança");
   }
 };
 
