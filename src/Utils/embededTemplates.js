@@ -112,7 +112,7 @@ export const helpMenu = (message) => {
   menu.start();
 };
 
-export const searchMenu = async (message, videoList) => {
+export const searchMenu = (message, videoList) => {
   const videosField = createFields(videoList);
   const embedSearchMenu = new MessageEmbed({
     title: "Escolha uma das opções abaixo: ",
@@ -124,7 +124,7 @@ export const searchMenu = async (message, videoList) => {
     footer: { text: "Fique esperto!" },
   });
 
-  const messageSent = await message.channel.send(embedSearchMenu);
+  const messageSent = message.channel.send(embedSearchMenu);
 
   return messageSent;
 };

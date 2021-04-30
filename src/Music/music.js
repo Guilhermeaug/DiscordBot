@@ -121,7 +121,7 @@ export const playSong = (message, currentSong) => {
         filter: "audioonly",
         opusEncoded: false,
         fmt: "mp3",
-        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200"],
+        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=1"],
       });
     }
 
@@ -194,7 +194,9 @@ export const searchByKeyword = async (message, client) => {
       if (!alreadySearched) {
         channelClient.removeListener("message", listenerToOption);
         message.channel.send(
-          `${emoji.get("x")} Você foi lerdo demais e acabou mamando ${emoji.get("yum")}`
+          `${emoji.get("x")} Você foi lerdo demais e acabou mamando ${emoji.get(
+            "yum"
+          )}`
         );
         searchMessage.edit(`${emoji.get("x")}`);
         searchMessage.suppressEmbeds();
