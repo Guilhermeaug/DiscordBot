@@ -23,6 +23,7 @@ let videosListFromApi = [];
 let isPlaying = false;
 let isSearching = false;
 let lastMessage;
+let searchMessageSentByBot;
 let channelClient;
 let alreadySearched = false;
 
@@ -185,18 +186,23 @@ export const searchByKeyword = async (message, client) => {
       return listaVideos;
     });
 
-    searchMenu(message, listaVideos);
+    const searchMessage = await searchMenu(message, listaVideos);
+    searchMessageSentByBot = searchMessage;
 
     channelClient.on("message", listenerToOption);
     setTimeout(function () {
       if (!alreadySearched) {
         channelClient.removeListener("message", listenerToOption);
-        message.channel.send("Você foi lerdo demais e a busca foi cancelada");
+        message.channel.send(
+          `${emoji.get("x")} Você foi lerdo demais e acabou mamando ${emoji.get("yum")}`
+        );
+        searchMessage.edit(`${emoji.get("x")}`);
+        searchMessage.suppressEmbeds();
       } else {
         alreadySearched = false;
       }
       isSearching = false;
-    }, 8000);
+    }, 9000);
   }
 };
 
@@ -210,6 +216,7 @@ const listenerToOption = (option) => {
       if (option.content >= 1 && option.content <= 10) {
         channelClient.removeListener("message", listenerToOption);
         playWithSearchParams(option);
+        searchMessageSentByBot.edit(`${emoji.get("white_check_mark")}`);
         alreadySearched = true;
         isSearching = false;
       } else if (option.content.toUpperCase() === "CANCEL") {
@@ -217,9 +224,11 @@ const listenerToOption = (option) => {
         message.channel.send(
           `${emoji.get("white_check_mark")} A busca foi cancelada`
         );
+        searchMessageSentByBot.edit(`${emoji.get("x")}`);
         alreadySearched = true;
         isSearching = false;
       }
+      searchMessageSentByBot.suppressEmbeds();
     }
   }
 };

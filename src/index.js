@@ -9,12 +9,7 @@ import {
   clearQueue,
   moveQueue,
 } from "./Music/music.js";
-import {
-  getPostFromSubredditAmouranth,
-  getPostFromSubredditFox,
-  getPostFromSubredditNsfw,
-  getPostFromSubredditMen,
-} from "./Reddit/reddit.js";
+import { getPostFromSubreddit } from "./Reddit/reddit.js";
 import { peopleMessages, randomMessages } from "./Utils/constants.js";
 import { helpMenu } from "./Utils/embededTemplates.js";
 import emoji from "node-emoji";
@@ -74,21 +69,25 @@ client.on("message", (message) => {
     clearChannel(message, quantity);
   }
 
+  if (message.content.startsWith("?search")) {
+    searchByKeyword(message, client);
+  }
+
   switch (message.content) {
     case "?amouranth":
-      getPostFromSubredditAmouranth(message);
+      getPostFromSubreddit(message, "amouranth");
       break;
 
     case "?nsfw":
-      getPostFromSubredditNsfw(message);
+      getPostFromSubreddit(message, "pornhub");
       break;
 
     case "?indiefox":
-      getPostFromSubredditFox(message);
+      getPostFromSubreddit(message, "indiefoxxreddit");
       break;
 
     case "?men":
-      getPostFromSubredditMen(message);
+      getPostFromSubreddit(message, "hotmen");
       break;
 
     case "?eu":
@@ -113,10 +112,6 @@ client.on("message", (message) => {
 
     case "?skip":
       skipSong(message);
-      break;
-
-    case "?search":
-      searchByKeyword(message, client);
       break;
 
     case "?hltv":

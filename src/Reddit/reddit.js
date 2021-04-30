@@ -1,6 +1,7 @@
 import Discord from "discord.js";
 import snoowrap from "snoowrap";
 import dotenv from "dotenv";
+import { isNsfw } from "../Utils/asserts.js";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
 
@@ -14,58 +15,12 @@ const r = new snoowrap({
   password: process.env.REDDIT_PASS,
 });
 
-const isNsfw = (message) => {
-  return message.channel.nsfw;
-};
-
-export const getPostFromSubredditAmouranth = async (message) => {
-  if (isNsfw(message)) {
-    const post = await r.getSubreddit("Amouranth").getRandomSubmission();
+export const getPostFromSubreddit = async (message, subreddit) => {
+  if (isNsfw(message) || subreddit == "amouranth" || subreddit == "indiefoxxreddit") {
+    const post = await r.getSubreddit(subreddit).getRandomSubmission();
 
     if (!post.url.includes(".jpg")) {
-      getPostFromSubredditAmouranth(message);
-    } else {
-      redditPostToEmbed(message, post);
-    }
-  } else {
-    message.channel.send("Só em um canal para maiores de 18 criança");
-  }
-};
-
-export const getPostFromSubredditFox = async (message) => {
-  if (isNsfw(message)) {
-    const post = await r.getSubreddit("indiefoxxreddit").getRandomSubmission();
-
-    if (!post.url.includes(".jpg")) {
-      getPostFromSubredditFox(message);
-    } else {
-      redditPostToEmbed(message, post);
-    }
-  } else {
-    message.channel.send("Só em um canal para maiores de 18 criança");
-  }
-};
-
-export const getPostFromSubredditNsfw = async (message) => {
-  if (isNsfw(message)) {
-    const post = await r.getSubreddit("pornhub").getRandomSubmission();
-
-    if (!post.url.includes(".jpg")) {
-      getPostFromSubredditNsfw(message);
-    } else {
-      redditPostToEmbed(message, post);
-    }
-  } else {
-    message.channel.send("Só em um canal para maiores de 18 criança");
-  }
-};
-
-export const getPostFromSubredditMen = async (message) => {
-  const post = await r.getSubreddit("hotmen").getRandomSubmission();
-
-  if (isNsfw(message)) {
-    if (!post.url.includes(".jpg")) {
-      getPostFromSubredditMen(message);
+      getPostFromSubreddit(message, subreddit);
     } else {
       redditPostToEmbed(message, post);
     }

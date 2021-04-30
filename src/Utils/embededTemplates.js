@@ -3,11 +3,9 @@ import pkg from "discord.js-menu";
 import format from "format-duration";
 const { Menu } = pkg;
 
-const createPages = async (message, videoList, title) => {
-  const pages = [];
+const createFields = (videoList) => {
   const fields = [];
 
-  //gerando um array de fields para preencher as páginas futuramente
   for (let i = 0; i < videoList.length; i++) {
     let video = videoList[i];
 
@@ -25,6 +23,13 @@ const createPages = async (message, videoList, title) => {
 
     fields.push({ name: name, value: value });
   }
+
+  return fields;
+};
+
+const createPages = async (message, videoList, title) => {
+  const pages = [];
+  const fields = createFields(videoList);
 
   const numPages = Math.ceil(fields.length / 10);
   for (let i = 0; i < numPages; i++) {
@@ -108,12 +113,18 @@ export const helpMenu = (message) => {
 };
 
 export const searchMenu = async (message, videoList) => {
-  const pages = await createPages(
-    message,
-    videoList,
-    "Escolha uma das opções abaixo"
-  );
+  const videosField = createFields(videoList);
+  const embedSearchMenu = new MessageEmbed({
+    title: "Escolha uma das opções abaixo: ",
+    url: "https://www.youtube.com/channel/UC4IOooU_UJ1skJRL0dITXbA",
+    description: "**Tenha cuidado!**",
+    color: 0xae00ff,
+    author: { name: "Sr.Cabeça" },
+    fields: videosField,
+    footer: { text: "Fique esperto!" },
+  });
 
-  const menu = new Menu(message.channel, message.author.id, pages);
-  menu.start();
+  const messageSent = await message.channel.send(embedSearchMenu);
+
+  return messageSent;
 };
