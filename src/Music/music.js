@@ -282,7 +282,7 @@ export const moveQueue = (message) => {
     message.channel.send(
       `${emoji.get("white_check_mark")} A música \u0060${
         songQueue[0].title
-      }\u0060 é a próxima da fila`
+      }\u0060 é a próxima da fila, otário`
     );
   }
 };
