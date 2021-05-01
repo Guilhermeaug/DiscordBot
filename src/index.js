@@ -73,6 +73,10 @@ client.on("message", (message) => {
     searchByKeyword(message, client);
   }
 
+  if(message.content.startsWith("?play")){
+    addMusicRequest(message);
+  }
+
   switch (message.content) {
     case "?amouranth":
       getPostFromSubreddit(message, "amouranth");
@@ -92,10 +96,6 @@ client.on("message", (message) => {
 
     case "?eu":
       randomMessage(message);
-      break;
-
-    case "?play":
-      addMusicRequest(message);
       break;
 
     case "?queue":
