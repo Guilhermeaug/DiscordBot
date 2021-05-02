@@ -16,7 +16,7 @@ const r = new snoowrap({
 });
 
 export const getPostFromSubreddit = async (message, subreddit) => {
-  if (isNsfw(message) || subreddit == "amouranth" || subreddit == "indiefoxxreddit") {
+  if (isNsfw(message) || subreddit == "amouranth" || subreddit == "indiefoxxreddit" || subreddit == "monkeys") {
     const post = await r.getSubreddit(subreddit).getRandomSubmission();
 
     if (!post.url.includes(".jpg")) {
