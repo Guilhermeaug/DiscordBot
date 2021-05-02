@@ -73,7 +73,7 @@ client.on("message", (message) => {
     searchByKeyword(message, client);
   }
 
-  if(message.content.startsWith("?play")){
+  if (message.content.startsWith("?play")) {
     addMusicRequest(message);
   }
 
@@ -92,6 +92,10 @@ client.on("message", (message) => {
 
     case "?men":
       getPostFromSubreddit(message, "hotmen");
+      break;
+
+    case "?monkey":
+      getPostFromSubreddit(message, "monkeys");
       break;
 
     case "?eu":

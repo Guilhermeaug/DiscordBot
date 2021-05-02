@@ -112,15 +112,13 @@ export const playSong = (message, currentSong) => {
     if (currentSong.earrape) {
       stream = ytdl(currentSong.url, {
         filter: "audioonly",
-        opusEncoded: false,
-        fmt: "mp3",
+        opusEncoded: true,
         encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=200"],
       });
     } else {
       stream = ytdl(currentSong.url, {
         filter: "audioonly",
-        opusEncoded: false,
-        fmt: "mp3",
+        opusEncoded: true,
         encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=1"],
       });
     }
@@ -128,7 +126,7 @@ export const playSong = (message, currentSong) => {
     message.member.voice.channel.join().then((connection) => {
       let dispatcher = connection
         .play(stream, {
-          type: "unknown",
+          type: "opus",
         })
         .on("finish", () => {
           playSong(message, songQueue.shift());
