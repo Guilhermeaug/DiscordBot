@@ -90,6 +90,10 @@ client.on("message", (message) => {
       getPostFromSubreddit(message, "indiefoxxreddit");
       break;
 
+    case "?love":
+      getPostFromSubreddit(message, "lovelilah");
+      break;
+
     case "?men":
       getPostFromSubreddit(message, "hotmen");
       break;
