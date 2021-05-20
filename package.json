@@ -34,6 +34,8 @@
     "node-pre-gyp": "^0.17.0",
     "opusscript": "0.0.7",
     "puppeteer": "^5.5.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
     "snoostorm": "^1.5.2",
     "snoowrap": "^1.22.0",
     "spotify-to-youtube": "^1.0.1",
