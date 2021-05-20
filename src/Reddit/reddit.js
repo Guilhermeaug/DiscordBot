@@ -55,7 +55,6 @@ export const getPostFromSubreddit = async (message, subreddit) => {
     stream.on("finish", async function () {
       await redditPostToEmbed(message);
     });*/
-
   } else {
     message.channel.send("Só em um canal para maiores de 18 criança");
   }
@@ -72,11 +71,12 @@ const redditPostToEmbed = (message, image) => {
     .then((message) => message.delete({ timeout: 20000 }));*/
 
   //console.log(image);
-  const embed = new Discord.MessageEmbed()
-    .setColor("#0099ff")
-    .setImage(image)
+
+  const embed = new Discord.MessageEmbed().setColor("#0099ff").setImage(image);
 
   message.channel
     .send(embed)
     .then((message) => message.delete({ timeout: 20000 }));
+
+  message.delete();
 };
