@@ -78,7 +78,7 @@ export const addMusicRequest = async (message, choosenUrl) => {
         if (spotifyData) {
           const spotifyMusic = {
             title: spotifyData.name,
-            author: spotifyData.artists[0]?.name ?? "",
+            author: spotifyData.artists[0] ? spotifyData.artists[0].name : "",
           };
 
           const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
