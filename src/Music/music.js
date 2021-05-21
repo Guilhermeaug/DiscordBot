@@ -1,8 +1,10 @@
 import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
-import SpotifyToYoutube from "spotify-to-youtube";
+import { YouTube } from "youtube-sr";
+import spotify from "spotify-url-info";
 import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
+import { getSearchType } from "../Utils/util.js";
 import arrayMove from "array-move";
 import emoji from "node-emoji";
 import dotenv from "dotenv";
@@ -33,11 +35,85 @@ export const addMusicRequest = async (message, choosenUrl) => {
       "Você não está em um canal de voz, Leticia, Hehehehe"
     );
 
-  const youtubeUrl = choosenUrl
-    ? choosenUrl
-    : message.content.split(" ")[1].substr(0);
+  const url = choosenUrl ? choosenUrl : message.content.split(" ")[1].substr(0);
+  const searchType = getSearchType(url);
+  
+  switch (searchType) {
+    case "youtube_video":
+      {
+        const musicInfo = await ytdl.getInfo(url);
+        const musicTitle = musicInfo.videoDetails.title;
+        const musicLength = musicInfo.videoDetails.lengthSeconds;
+        const userRequested = message.author.username;
 
-  if (ytdl.validateURL(youtubeUrl)) {
+        let song = {
+          title: musicTitle,
+          url: url,
+          length: musicLength,
+          userRequested: userRequested,
+        };
+
+        if (message.content.includes("-e")) {
+          song.earrape = true;
+          songQueue.push(song);
+        } else {
+          song.earrape = false;
+          songQueue.push(song);
+        }
+
+        if (!isPlaying) {
+          isPlaying = true;
+          playSong(message, songQueue.shift());
+        }
+      }
+      break;
+    case "youtube_playlist":
+      {
+        getVideosFromPlaylistUrl(message, url);
+      }
+      break;
+    case "spotify_song":
+      {
+        const spotifyData = await spotify.getData(url).catch(() => {});
+        if (spotifyData) {
+          const spotifyMusic = {
+            title: spotifyData.name,
+            author: spotifyData.artists[0]?.name ?? "",
+          };
+
+          const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
+          const ytv = await YouTube.search(searchString, {
+            limit: 1,
+            type: "video",
+          }).catch((e) => {});
+
+          if (ytv && ytv[0]) addMusicRequest(message, ytv[0].url);
+        }
+      }
+      break;
+    case "spotify_playlist":
+      {
+        const spotifyData = await spotify.getTracks(url).catch(() => {});
+        if (spotifyData) {
+          for (const track of spotifyData) {
+            const spotifyMusic = {
+              title: track.name,
+              author: track.artists[0]?.name ?? "",
+            };
+            const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
+            const ytv = await YouTube.search(searchString, {
+              limit: 1,
+              type: "video",
+            }).catch((e) => {});
+
+            if (ytv && ytv[0]) await addMusicRequest(message, ytv[0].url);
+          }
+        }
+      }
+      break;
+  }
+
+  /*if (ytdl.validateURL(youtubeUrl)) {
     if (youtubeUrl.includes("list")) {
       getVideosFromPlaylistUrl(message, youtubeUrl);
     } else {
@@ -71,11 +147,11 @@ export const addMusicRequest = async (message, choosenUrl) => {
     }
   } else {
     return message.channel.send("Insira uma URL válida corno");
-  }
+  }*/
 };
 
 const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
-  const playlistId = youtubeUrl.split("=")[2];
+  const playlistId = youtubeUrl.split("=")[1];
 
   const request = async () => {
     let results = youtube.playlistItems
