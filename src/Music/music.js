@@ -37,7 +37,7 @@ export const addMusicRequest = async (message, choosenUrl) => {
 
   const url = choosenUrl ? choosenUrl : message.content.split(" ")[1].substr(0);
   const searchType = getSearchType(url);
-  
+
   switch (searchType) {
     case "youtube_video":
       {
@@ -112,42 +112,6 @@ export const addMusicRequest = async (message, choosenUrl) => {
       }
       break;
   }
-
-  /*if (ytdl.validateURL(youtubeUrl)) {
-    if (youtubeUrl.includes("list")) {
-      getVideosFromPlaylistUrl(message, youtubeUrl);
-    } else {
-      const musicInfo = await ytdl.getInfo(youtubeUrl);
-      const musicTitle = musicInfo.videoDetails.title;
-      const musicLength = musicInfo.videoDetails.lengthSeconds;
-      const userRequested = message.author.username;
-
-      if (message.content.includes("-e")) {
-        songQueue.push({
-          title: musicTitle,
-          url: youtubeUrl,
-          length: musicLength,
-          userRequested: userRequested,
-          earrape: true,
-        });
-      } else {
-        songQueue.push({
-          title: musicTitle,
-          url: youtubeUrl,
-          length: musicLength,
-          userRequested: userRequested,
-          earrape: false,
-        });
-      }
-
-      if (!isPlaying) {
-        isPlaying = true;
-        playSong(message, songQueue.shift());
-      }
-    }
-  } else {
-    return message.channel.send("Insira uma URL válida corno");
-  }*/
 };
 
 const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
