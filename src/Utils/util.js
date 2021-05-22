@@ -4,7 +4,8 @@
   https://github.com/Androz2091/discord-player/blob/master/src/utils/Util.ts
 */
 
-import { YouTube } from "youtube-sr";
+import pkg from "youtube-sr";
+const { YouTube } = pkg;
 
 const spotifySongRegex =
   /https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:track\/|\?uri=spotify:track:)((\w|-){22})/;
