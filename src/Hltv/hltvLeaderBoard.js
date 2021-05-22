@@ -30,7 +30,7 @@ const scrape = async () => {
 
 }
 
-const Ranking = async (message) => {
+export const Ranking = async (message) => {
   const tabelaTimes = await scrape();
 
   const embed = new Discord.MessageEmbed()
@@ -54,7 +54,3 @@ const Ranking = async (message) => {
   message.channel.send(embed);
   
 }
-
-export {
-  Ranking
-};

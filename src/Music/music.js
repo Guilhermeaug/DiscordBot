@@ -1,13 +1,11 @@
 import Discord from "discord.js";
 import pkg from "googleapis";
 import ytdl from "discord-ytdl-core";
-import pkg2 from "youtube-sr";
 import spotify from "spotify-url-info";
 import { queueMenu, searchMenu } from "../Utils/embededTemplates.js";
 import { getSearchType } from "../Utils/util.js";
 import arrayMove from "array-move";
 import emoji from "node-emoji";
-const { YouTube } = pkg2;
 import dotenv from "dotenv";
 
 //import leroy from '../leroy'; --> amuleto da sorte --> que Deus nos abençoe
@@ -83,15 +81,24 @@ export const addMusicRequest = async (message, choosenUrl) => {
           };
 
           const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
-          const ytv = await YouTube.search(searchString, {
-            limit: 1,
-            type: "video",
-          }).catch((e) => {});
+          const results = await youtube.search
+            .list({
+              q: searchString,
+              part: "snippet",
+              type: "video",
+              maxResults: 1,
+            })
+            .catch((e) => {});
 
-          if (ytv && ytv[0]) addMusicRequest(message, ytv[0].url);
+          const items = results.data.items;
+          if (items && items[0]) {
+            const youtubeUrl = `https://www.youtube.com/watch?v=${items[0].id.videoId}`;
+            addMusicRequest(message, youtubeUrl);
+          }
         }
       }
       break;
+    case "spotify_album":
     case "spotify_playlist":
       {
         const spotifyData = await spotify.getTracks(url).catch(() => {});
@@ -101,15 +108,29 @@ export const addMusicRequest = async (message, choosenUrl) => {
               title: track.name,
               author: spotifyData.artists ? spotifyData.artists[0].name : "",
             };
-            const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
-            const ytv = await YouTube.search(searchString, {
-              limit: 1,
-              type: "video",
-            }).catch((e) => {});
 
-            if (ytv && ytv[0]) await addMusicRequest(message, ytv[0].url);
+            const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
+            const results = await youtube.search
+              .list({
+                q: searchString,
+                part: "snippet",
+                type: "video",
+                maxResults: 1,
+              })
+              .catch((e) => {});
+
+            const items = results.data.items;
+            if (items && items[0]) {
+              const youtubeUrl = `https://www.youtube.com/watch?v=${items[0].id.videoId}`;
+              addMusicRequest(message, youtubeUrl);
+            }
           }
         }
+      }
+      break;
+    default:
+      {
+        message.channel.send("Larga a mão de ser mula");
       }
       break;
   }
