@@ -122,7 +122,7 @@ const getVideosFromPlaylistUrl = async (message, youtubeUrl) => {
       .list({
         part: "contentDetails",
         playlistId: playlistId,
-        maxResults: 50,
+        maxResults: 30,
       })
       .catch(console.error);
     return results;
