@@ -79,7 +79,7 @@ export const addMusicRequest = async (message, choosenUrl) => {
         if (spotifyData) {
           const spotifyMusic = {
             title: spotifyData.name,
-            author: spotifyData.artists[0] ? spotifyData.artists[0].name : "",
+            author: spotifyData.artists ? spotifyData.artists[0].name : "",
           };
 
           const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
@@ -99,7 +99,7 @@ export const addMusicRequest = async (message, choosenUrl) => {
           for (const track of spotifyData) {
             const spotifyMusic = {
               title: track.name,
-              author: spotifyData.artists[0] ? spotifyData.artists[0].name : "",
+              author: spotifyData.artists ? spotifyData.artists[0].name : "",
             };
             const searchString = `${spotifyMusic.title} ${spotifyMusic.author}`;
             const ytv = await YouTube.search(searchString, {
