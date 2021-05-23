@@ -3,6 +3,52 @@ import pkg from "discord.js-menu";
 import format from "format-duration";
 const { Menu } = pkg;
 
+export const createFieldsForHltvTeams = (teamsTable) => {
+  const fields = [];
+
+  for (let i = 0; i < 10; i++) {
+    let team = teamsTable[i];
+
+    let name = "\u200b";
+    let value = `\u0060${i + 1}.\u0060 | **${team}**`;
+    fields.push({ name: name, value: value });
+  }
+
+  return fields;
+};
+
+export const createFieldsForHltvProfile = (playerData) => {
+  //Player Data:  [ '1.03', '0.63', '29.8%', '30', '0.63', '71.0%' ]
+  const fields = [
+    {
+      name: "\u200b",
+      value: `\u0060Rating:\u0060 **${playerData[0]}** `,
+    },
+    {
+      name: "\u200b",
+      value: `\u0060Kills por round:\u0060 **${playerData[1]}** `,
+    },
+    {
+      name: "\u200b",
+      value: `\u0060Headshots:\u0060 **${playerData[2]}** `,
+    },
+    {
+      name: "\u200b",
+      value: `\u0060Mapas jogados:\u0060 **${playerData[3]}** `,
+    },
+    {
+      name: "\u200b",
+      value: `\u0060Mortes por round:\u0060 **${playerData[4]}** `,
+    },
+    {
+      name: "\u200b",
+      value: `\u0060Porcentagem de rounds em que contribuiu:\u0060 **${playerData[5]}** `,
+    },
+  ];
+
+  return fields;
+};
+
 const createFields = (videoList) => {
   const fields = [];
 
@@ -99,8 +145,7 @@ export const helpMenu = (message) => {
             value: "\u200b",
           },
           {
-            name:
-              "?move: move a música da posição escolhida para a primeira da fila",
+            name: "?move: move a música da posição escolhida para a primeira da fila",
             value: "\u200b",
           },
         ],

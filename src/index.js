@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 import dotenv from "dotenv";
-import { Ranking } from "./Hltv/hltvLeaderBoard.js";
+import { Ranking, getHltvPlayer } from "./Hltv/hltv.js";
 import {
   addMusicRequest,
   skipSong,
@@ -75,6 +75,10 @@ client.on("message", (message) => {
 
   if (message.content.startsWith("?play")) {
     addMusicRequest(message);
+  }
+
+  if (message.content.startsWith("?stats")) {
+    getHltvPlayer(message);
   }
 
   switch (message.content) {
