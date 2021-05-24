@@ -7,23 +7,35 @@ import puppeteer from "puppeteer";
 
 const getHltvTeams = async () => {
   const url = "https://www.hltv.org/ranking/teams/";
-
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (
+      req.resourceType() == "stylesheet" ||
+      req.resourceType() == "font" ||
+      req.resourceType() == "image"
+    ) {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
+
   await page.goto(url);
-
-  const result = await page.evaluate(() => {
-    const teams = [];
-
-    Array.from(document.querySelectorAll("div.ranked-team")).map((team) => {
-      let name = team.getElementsByClassName("name")[0].innerText;
-      teams.push(name);
-    });
-
-    return teams;
-  }).catch((e) => {});
+  const result = await page
+    .evaluate(() => {
+      const teams = Array.from(
+        document.querySelectorAll("div.ranked-team")
+      ).map((team) => {
+        return team.getElementsByClassName("name")[0].innerText;
+      });
+      return teams;
+    })
+    .catch((e) => {});
 
   browser.close();
 
@@ -56,41 +68,50 @@ export const getHltvPlayer = async (message) => {
   });
 
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (req.resourceType() == "stylesheet" || req.resourceType() == "font") {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
 
   await page.goto(url);
   /*await page.goto("https://www.hltv.org/");
   await page.click("[name=query]");
   await page.keyboard.type("fallen");
   await page.keyboard.press("Enter");*/
-  await page.waitForSelector(".table");
-  await page.click(".table > tbody > tr > td > a");
-  await page.waitForSelector("div.player-stat");
-  await page.waitForSelector("img.bodyshot-img");
+  await page.waitForSelector(".table").catch((e) => {});
+  await page.click(".table > tbody > tr > td > a").catch((e) => {});
+  await page.waitForSelector("div.player-stat").catch((e) => {});
+  await page.waitForSelector("img.bodyshot-img").catch((e) => {});
 
-  const playerData = await page.evaluate(() => {
-    const stats = [];
+  const playerData = await page
+    .evaluate(() => {
+      const stats = Array.from(
+        document.querySelectorAll("div.player-stat")
+      ).map((playerStat) => {
+        return playerStat.getElementsByClassName("statsVal")[0].innerText;
+      });
+      return stats;
+    })
+    .catch((e) => {});
 
-    Array.from(document.querySelectorAll("div.player-stat")).map(
-      (playerStat) => {
-        let statValue =
-          playerStat.getElementsByClassName("statsVal")[0].innerText;
-        stats.push(statValue);
-      }
-    );
-    return stats;
-  }).catch((e) => {});
+  const playerImage = await page
+    .evaluate(() => {
+      return document.querySelector(".bodyshot-img").getAttribute("src");
+    })
+    .catch((e) => {});
 
-  const playerImage = await page.evaluate(() => {
-    const image = document.querySelector(".bodyshot-img").getAttribute("src");
-    return image;
-  }).catch((e) => {});
+  const playerPageUrl = page.url();
 
   browser.close();
 
   const profileFields = createFieldsForHltvProfile(playerData);
   const embedHltvProfile = new Discord.MessageEmbed({
     title: `${playerName.toUpperCase()}`,
-    url: `${url}`,
+    url: `${playerPageUrl}`,
     thumbnail: {
       url: `${playerImage}`,
     },
