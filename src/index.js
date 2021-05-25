@@ -81,6 +81,10 @@ client.on("message", (message) => {
     getHltvPlayer(message);
   }
 
+  if (message.content.startsWith("?move")) {
+    moveQueue(message);
+  }
+
   switch (message.content) {
     case "?amouranth":
       getPostFromSubreddit(message, "amouranth");
@@ -112,10 +116,6 @@ client.on("message", (message) => {
 
     case "?queue":
       showQueue(message);
-      break;
-
-    case "?move":
-      moveQueue(message);
       break;
 
     case "?clear":
