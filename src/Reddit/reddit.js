@@ -25,30 +25,34 @@ export const getPostFromSubreddit = async (message, subreddit) => {
     subreddit == "indiefoxxreddit" ||
     subreddit == "monkeys"
   ) {
-''    const post = await r.getSubreddit(subreddit).getRandomSubmission();
-    let imageUrl;
+    try {
+      const post = await r.getSubreddit(subreddit).getRandomSubmission();
+      let imageUrl;
 
-    if (!isThereAnyImages(post)) {
-      if(post.url.includes(".jpg") || post.url.includes(".png")){
-        redditPostToEmbed(message, post.url);
+      if (!isThereAnyImages(post)) {
+        if (post.url.includes(".jpg") || post.url.includes(".png")) {
+          redditPostToEmbed(message, post.url);
+        } else {
+          getPostFromSubreddit(message, subreddit);
+        }
+
+        return;
       } else {
-        getPostFromSubreddit(message, subreddit);
+        imageUrl = post.preview.images[0].source.url;
       }
-      
-      return;
-    } else {
-      imageUrl = post.preview.images[0].source.url;
+
+      if (!isValidUrl(imageUrl)) {
+        getPostFromSubreddit(message, subreddit);
+        return;
+      }
+
+      const requestUrl = imageUrl.replace("preview", "i");
+      const requestUrlPng = requestUrl.concat(".png");
+
+      redditPostToEmbed(message, requestUrlPng);
+    } catch (error) {
+      message.channel.send("Amigo, dá um tempo");
     }
-
-    if (!isValidUrl(imageUrl)) {
-      getPostFromSubreddit(message, subreddit);
-      return;
-    }
-
-    const requestUrl = imageUrl.replace("preview", "i");
-    const requestUrlPng = requestUrl.concat(".png");
-
-    redditPostToEmbed(message, requestUrlPng);
   } else {
     message.channel.send("Só em um canal para maiores de 18 criança");
   }
