@@ -25,11 +25,16 @@ export const getPostFromSubreddit = async (message, subreddit) => {
     subreddit == "indiefoxxreddit" ||
     subreddit == "monkeys"
   ) {
-    const post = await r.getSubreddit(subreddit).getRandomSubmission();
+''    const post = await r.getSubreddit(subreddit).getRandomSubmission();
     let imageUrl;
 
     if (!isThereAnyImages(post)) {
-      getPostFromSubreddit(message, subreddit);
+      if(post.url.includes(".jpg") || post.url.includes(".png")){
+        redditPostToEmbed(message, post.url);
+      } else {
+        getPostFromSubreddit(message, subreddit);
+      }
+      
       return;
     } else {
       imageUrl = post.preview.images[0].source.url;
