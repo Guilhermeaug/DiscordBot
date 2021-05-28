@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 import dotenv from "dotenv";
-import { Ranking, getHltvPlayer } from "./Hltv/hltv.js";
+import { Ranking, getHltvPlayer, getPlayerOfTheWeek } from "./Hltv/hltv.js";
 import {
   addMusicRequest,
   skipSong,
@@ -128,6 +128,10 @@ client.on("message", (message) => {
 
     case "?hltv":
       Ranking(message);
+      break;
+
+    case "?pw":
+      getPlayerOfTheWeek(message);
       break;
 
     case "?help":

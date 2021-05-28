@@ -121,3 +121,48 @@ export const getHltvPlayer = async (message) => {
 
   message.channel.send(embedHltvProfile);
 };
+
+export const getPlayerOfTheWeek = async (message) => {
+  const url = `https://hltv.org`;
+
+  const browser = await puppeteer.launch({
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--window-size=1600,900",
+    ],
+  });
+
+  const page = await browser.newPage();
+  await page.setViewport({
+    width: 1600,
+    height: 900,
+  });
+  await page.goto(url);
+  await page.waitForSelector(
+    "body > div.bgPadding > div > div.colCon > div.leftCol > aside:nth-child(2)"
+  );
+
+  const element = await page.$(
+    "body > div.bgPadding > div > div.colCon > div.leftCol > aside:nth-child(2)"
+  );
+  await element.screenshot({ path: "hltv.png" });
+
+  let pages = await browser.pages();
+  await Promise.all(pages.map((page) => page.close()));
+  await browser.close().then(() => {
+    embedLocalImage(message);
+  })
+};
+
+const embedLocalImage = (message) => {
+  const attachment = new Discord.MessageAttachment(
+    "./hltv.png",
+    "hltv.png"
+  );
+  const embed = new Discord.MessageEmbed()
+    .attachFiles(attachment)
+    .setImage("attachment://hltv.png");
+
+  message.channel.send({ embed });
+};
