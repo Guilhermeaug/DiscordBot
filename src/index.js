@@ -1,6 +1,12 @@
 import Discord from "discord.js";
 import dotenv from "dotenv";
-import { Ranking, getHltvPlayer, getPlayerOfTheWeek } from "./Hltv/hltv.js";
+import {
+  Ranking,
+  getHltvPlayer,
+  getPlayerOfTheWeek,
+  getHltvFrontPage,
+  getFullPlayerStats,
+} from "./Hltv/hltv.js";
 import {
   addMusicRequest,
   skipSong,
@@ -77,8 +83,12 @@ client.on("message", (message) => {
     addMusicRequest(message);
   }
 
-  if (message.content.startsWith("?stats")) {
+  /*if (message.content.startsWith("?stats")) {
     getHltvPlayer(message);
+  }*/
+
+  if (message.content.startsWith("?stats")) {
+    getFullPlayerStats(message);
   }
 
   if (message.content.startsWith("?move")) {
@@ -132,6 +142,10 @@ client.on("message", (message) => {
 
     case "?pw":
       getPlayerOfTheWeek(message);
+      break;
+
+    case "?front":
+      getHltvFrontPage(message);
       break;
 
     case "?help":
