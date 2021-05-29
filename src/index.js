@@ -83,10 +83,6 @@ client.on("message", (message) => {
     addMusicRequest(message);
   }
 
-  /*if (message.content.startsWith("?stats")) {
-    getHltvPlayer(message);
-  }*/
-
   if (message.content.startsWith("?stats")) {
     getFullPlayerStats(message);
   }

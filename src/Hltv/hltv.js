@@ -221,20 +221,21 @@ export const getFullPlayerStats = async (message) => {
     let legend = document.querySelector(
       "div.summaryShortInfo > div.summaryLegendContainer"
     );
+    let cookies = document.querySelector("#CybotCookiebotDialog");
 
     button.remove();
     legend.remove();
+    if(cookies) cookies.remove();
   });
 
-  await page.waitForSelector("div.playerSummaryStatBox");
   const element = await page.$("div.playerSummaryStatBox");
-  await element.screenshot({ path: "hltv.png" });
+  await element.screenshot({ path: "hltv.png" }).then(() => {
+    embedLocalImage(message);
+  });
 
   let pages = await browser.pages();
   await Promise.all(pages.map((page) => page.close()));
-  await browser.close().then(() => {
-    embedLocalImage(message);
-  });
+  await browser.close();
 };
 
 const embedLocalImage = (message, title, link) => {
