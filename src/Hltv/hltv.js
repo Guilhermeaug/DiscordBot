@@ -252,27 +252,30 @@ export const getFullPlayerStats = async (message) => {
     );
     let cookies = document.querySelector("#CybotCookiebotDialog");
 
-    sectionTitles.forEach((item) => {
-      item.remove();
-    });
-    sectionSubtitles.forEach((item) => {
-      item.remove();
-    });
+    if (sectionTitles)
+      sectionTitles.forEach((item) => {
+        item.remove();
+      });
+    if (sectionSubtitles)
+      sectionSubtitles.forEach((item) => {
+        item.remove();
+      });
     vSpaces.forEach((item) => {
       item.remove();
     });
-    ad.remove();
-    topMenu.remove();
-    bottomMenu.remove();
-    button.remove();
-    legend.remove();
-    sectionSpacer.forEach((item) => {
-      item.remove();
-    });
-    sectionFeatureRankings.remove();
-    sectionTeammates.remove();
-    sectionGraph.remove();
-    cookies.remove();
+    if (ad) ad.remove();
+    if (topMenu) topMenu.remove();
+    if (bottomMenu) bottomMenu.remove();
+    if (button) button.remove();
+    if (legend) legend.remove();
+    if (sectionSpacer)
+      sectionSpacer.forEach((item) => {
+        item.remove();
+      });
+    if (sectionFeatureRankings) sectionFeatureRankings.remove();
+    if (sectionTeammates) sectionTeammates.remove();
+    if (sectionGraph) sectionGraph.remove();
+    if (cookies) cookies.remove();
   });
 
   const element = await page.$("div.stats-player-overview");
