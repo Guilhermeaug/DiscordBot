@@ -58,6 +58,7 @@ export const Ranking = async (message) => {
   message.channel.send(embedHltvTop10);
 };
 
+//deprecated xD
 export const getHltvPlayer = async (message) => {
   const playerName = message.content.split(" ")[1].substr(0);
   if (!playerName) return;
@@ -204,31 +205,77 @@ export const getFullPlayerStats = async (message) => {
   const url = `https://www.hltv.org/search?query=${playerName}`;
 
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--window-size=1600,900",
+    ],
   });
 
   const page = await browser.newPage();
   await page.goto(url);
+  await page.setViewport({
+    width: 1600,
+    height: 900,
+  });
   await page.waitForSelector(".table").catch((e) => {});
   await page.click(".table > tbody > tr > td > a").catch((e) => {});
 
   const urlArgs = page.url().split("/");
   const link = `https://www.hltv.org/stats/players/${urlArgs[4]}/${playerName}`;
   await page.goto(link);
+  await page.waitForSelector("div.stats-player-overview");
+  await page.waitForTimeout(2000);
 
   await page.evaluate(() => {
+    const sectionTitles = document.querySelectorAll("span.standard-headline");
+    const sectionSubtitles = document.querySelectorAll(
+      "span.featured-sub-text"
+    );
+    const vSpaces = document.querySelectorAll(
+      "div.stats-player-overview > div.vspace"
+    );
+    let ad = document.querySelector("#stats_1");
+    let topMenu = document.querySelector("div.stats-top-menu");
+    let bottomMenu = document.querySelector("div.gtSmartphone-only");
     let button = document.querySelector("div.summaryBodyshotContainer > div");
     let legend = document.querySelector(
       "div.summaryShortInfo > div.summaryLegendContainer"
     );
+    let sectionSpacer = document.querySelectorAll("div.section-spacer");
+    let sectionFeatureRankings = document.querySelector(
+      "div.featured-ratings-container"
+    );
+    let sectionTeammates = document.querySelector("div.grid.teammates");
+    let sectionGraph = document.querySelector(
+      "div.stats-player-overview > div.standard-box"
+    );
     let cookies = document.querySelector("#CybotCookiebotDialog");
 
+    sectionTitles.forEach((item) => {
+      item.remove();
+    });
+    sectionSubtitles.forEach((item) => {
+      item.remove();
+    });
+    vSpaces.forEach((item) => {
+      item.remove();
+    });
+    ad.remove();
+    topMenu.remove();
+    bottomMenu.remove();
     button.remove();
     legend.remove();
-    if(cookies) cookies.remove();
+    sectionSpacer.forEach((item) => {
+      item.remove();
+    });
+    sectionFeatureRankings.remove();
+    sectionTeammates.remove();
+    sectionGraph.remove();
+    cookies.remove();
   });
 
-  const element = await page.$("div.playerSummaryStatBox");
+  const element = await page.$("div.stats-player-overview");
   await element.screenshot({ path: "hltv.png" }).then(() => {
     embedLocalImage(message);
   });
