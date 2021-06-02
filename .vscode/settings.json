@@ -1,15 +1,12 @@
 {
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/0d2290de-95b9-40cb-98b1-7e446bca2d16/resourceGroups/discord-bot/providers/Microsoft.Web/sites/discord-bot-cefetmg",
-    "appService.deploySubpath": ".",
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#B6244F",
-        "activityBar.foreground": "#F1FAEE",
-        "activityBar.inactiveForeground": "#F1FAEE77",
-        "activityBarBadge.background": "#bf0060",
-        "activityBarBadge.foreground": "#e7e7e7"
-    }
+  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"],
+  "appService.defaultWebAppToDeploy": "/subscriptions/0d2290de-95b9-40cb-98b1-7e446bca2d16/resourceGroups/discord-bot/providers/Microsoft.Web/sites/discord-bot-cefetmg",
+  "appService.deploySubpath": ".",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#5142F0",
+    "activityBar.foreground": "#F1FAEE",
+    "activityBar.inactiveForeground": "#F1FAEE77",
+    "activityBarBadge.background": "#5142F0",
+    "activityBarBadge.foreground": "#e7e7e7"
+  }
 }

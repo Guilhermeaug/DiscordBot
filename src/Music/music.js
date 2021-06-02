@@ -175,13 +175,11 @@ export const playSong = (message, currentSong) => {
       stream = ytdl(currentSong.url, {
         filter: "audioonly",
         opusEncoded: true,
-        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=200"],
       });
     } else {
       stream = ytdl(currentSong.url, {
         filter: "audioonly",
         opusEncoded: true,
-        encoderArgs: ["-af", "bass=g=20,dynaudnorm=f=200,volume=1"],
       });
     }
 
@@ -194,6 +192,7 @@ export const playSong = (message, currentSong) => {
           playSong(message, songQueue.shift());
         })
         .on("error", (error) => console.error(error));
+      dispatcher.setVolumeLogarithmic(1.1);
     });
   } else {
     isPlaying = false;
